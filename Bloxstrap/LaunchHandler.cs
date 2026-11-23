@@ -3,7 +3,7 @@
 using Windows.Win32;
 using Windows.Win32.Foundation;
 
-using Bloxstrap.UI.Elements.Dialogs;
+using Bloxstrap.LXR.UI;
 using Bloxstrap.Enums;
 
 namespace Bloxstrap
@@ -118,9 +118,7 @@ namespace Bloxstrap
                 Frontend.ShowMessageBox("You are about to install a QA build of LXRStrap. The red window border indicates that this is a QA build.\n\nQA builds are handled completely separately of your standard installation, like a virtual environment.", MessageBoxImage.Information);
 #endif
 
-                new LanguageSelectorDialog().ShowDialog();
-
-                var installer = new UI.Elements.Installer.MainWindow();
+                var installer = new InstallerWindow();
                 installer.ShowDialog();
 
                 interlock.Dispose();
@@ -150,7 +148,7 @@ namespace Bloxstrap
             }
             else
             {
-                var dialog = new UninstallerDialog();
+                var dialog = new UninstallWindow();
                 dialog.ShowDialog();
 
                 confirmed = dialog.Confirmed;
@@ -178,12 +176,13 @@ namespace Bloxstrap
 
             if (interlock.IsAcquired)
             {
-                bool showAlreadyRunningWarning = Process.GetProcessesByName(App.ProjectName).Length > 1;
-
-                var window = new UI.Elements.Settings.MainWindow(showAlreadyRunningWarning);
+                var window = new MainWindow();
 
                 // typically we'd use Show(), but we need to block to ensure IPL stays in scope
                 window.ShowDialog();
+
+                interlock.Dispose();
+                ProcessNextAction(window.CloseAction);
             }
             else
             {
@@ -200,10 +199,8 @@ namespace Bloxstrap
 
         public static void LaunchMenu()
         {
-            var dialog = new LaunchMenuDialog();
-            dialog.ShowDialog();
-
-            ProcessNextAction(dialog.CloseAction);
+            // the main window is the launch menu; opening it with no arguments just shows it
+            LaunchSettings();
         }
 
         public static void LaunchRoblox(LaunchMode launchMode)
@@ -246,7 +243,7 @@ namespace Bloxstrap
             if (!App.LaunchSettings.QuietFlag.Active)
             {
                 App.Logger.WriteLine(LOG_IDENT, "Initializing bootstrapper dialog");
-                dialog = App.Settings.Prop.BootstrapperStyle.GetNew();
+                dialog = Frontend.GetBootstrapperDialog();
                 App.Bootstrapper.Dialog = dialog;
                 dialog.Bootstrapper = App.Bootstrapper;
             }

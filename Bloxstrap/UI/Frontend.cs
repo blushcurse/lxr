@@ -1,7 +1,6 @@
 ﻿using System.Windows;
 
-using Bloxstrap.UI.Elements.Bootstrapper;
-using Bloxstrap.UI.Elements.Dialogs;
+using Bloxstrap.LXR.UI;
 
 namespace Bloxstrap.UI
 {
@@ -14,7 +13,7 @@ namespace Bloxstrap.UI
             if (App.LaunchSettings.QuietFlag.Active)
                 return defaultResult;
 
-            return ShowFluentMessageBox(message, icon, buttons);
+            return ShowLxrMessageBox(message, icon, buttons);
         }
 
         public static void ShowPlayerErrorDialog(bool crash = false)
@@ -37,7 +36,7 @@ namespace Bloxstrap.UI
 
             Application.Current.Dispatcher.Invoke(() =>
             {
-                new ExceptionDialog(exception).ShowDialog();
+                new ExceptionWindow(exception).ShowDialog();
             });
         }
 
@@ -48,58 +47,17 @@ namespace Bloxstrap.UI
 
             Application.Current.Dispatcher.Invoke(() =>
             {
-                new ConnectivityDialog(title, description, image, exception).ShowDialog();
+                new ConnectivityWindow(title, description, image, exception).ShowDialog();
             });
         }
 
-        private static IBootstrapperDialog GetCustomBootstrapper()
-        {
-            const string LOG_IDENT = "Frontend::GetCustomBootstrapper";
+        public static IBootstrapperDialog GetBootstrapperDialog() => new LaunchWindow();
 
-            Directory.CreateDirectory(Paths.CustomThemes);
-
-            try
-            {
-                if (App.Settings.Prop.SelectedCustomTheme == null)
-                    throw new CustomThemeException("CustomTheme.Errors.NoThemeSelected");
-
-                CustomDialog dialog = new CustomDialog();
-                dialog.ApplyCustomTheme(App.Settings.Prop.SelectedCustomTheme);
-                return dialog;
-            }
-            catch (Exception ex)
-            {
-                App.Logger.WriteException(LOG_IDENT, ex);
-
-                if (!App.LaunchSettings.QuietFlag.Active)
-                    ShowMessageBox(string.Format(Strings.CustomTheme_Errors_SetupFailed, ex.Message, "Bloxstrap"), MessageBoxImage.Error); // NOTE: Bloxstrap is the theme name
-
-                return GetBootstrapperDialog(BootstrapperStyle.FluentDialog);
-            }
-        }
-
-        public static IBootstrapperDialog GetBootstrapperDialog(BootstrapperStyle style)
-        {
-            return style switch
-            {
-                BootstrapperStyle.VistaDialog => new VistaDialog(),
-                BootstrapperStyle.LegacyDialog2008 => new LegacyDialog2008(),
-                BootstrapperStyle.LegacyDialog2011 => new LegacyDialog2011(),
-                BootstrapperStyle.ProgressDialog => new ProgressDialog(),
-                BootstrapperStyle.ClassicFluentDialog => new ClassicFluentDialog(),
-                BootstrapperStyle.ByfronDialog => new ByfronDialog(),
-                BootstrapperStyle.FluentDialog => new FluentDialog(false),
-                BootstrapperStyle.FluentAeroDialog => new FluentDialog(true),
-                BootstrapperStyle.CustomDialog => GetCustomBootstrapper(),
-                _ => new FluentDialog(false)
-            };
-        }
-
-        private static MessageBoxResult ShowFluentMessageBox(string message, MessageBoxImage icon, MessageBoxButton buttons)
+        private static MessageBoxResult ShowLxrMessageBox(string message, MessageBoxImage icon, MessageBoxButton buttons)
         {
             return Application.Current.Dispatcher.Invoke(new Func<MessageBoxResult>(() =>
             {
-                var messagebox = new FluentMessageBox(message, icon, buttons);
+                var messagebox = new MessageBoxWindow(message, icon, buttons);
                 messagebox.ShowDialog();
                 return messagebox.Result;
             }));

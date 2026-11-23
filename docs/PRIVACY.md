@@ -16,6 +16,5 @@ LXRStrap is derived from Bloxstrap 2.11.4 (commit 02db760). Everything below was
 ## Optional, still present (off unless you enable the feature)
 - `ipinfo.io` (server location in game join notifications; sends the game server IP, not yours).
 - Discord Rich Presence.
-- `raw.githubusercontent.com` / `github.com` downloads (supporter images, emoji font) are fetched only when the matching page/feature is used.
 
 Logs stay local in `%LOCALAPPDATA%\LXRStrap\Logs`.

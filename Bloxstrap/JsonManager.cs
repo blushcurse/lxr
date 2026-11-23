@@ -44,7 +44,7 @@
                 {
                     string contents = File.ReadAllText(FileLocation);
 
-                    T? settings = JsonSerializer.Deserialize<T>(contents);
+                    T? settings = DeserializeOrRecover(ref contents);
 
                     if (settings is null)
                         throw new ArgumentNullException("Deserialization returned null");
@@ -84,8 +84,9 @@
 
                     try
                     {
-                        // Create a backup of loaded file
-                        File.Copy(FileLocation, FileLocation + ".bak", true);
+                        // Keep the unreadable file for troubleshooting. The ".bak" file is the last known-good copy
+                        // written by Save(), so it must not be overwritten here.
+                        File.Copy(FileLocation, FileLocation + ".corrupt", true);
                     }
                     catch (Exception copyEx)
                     {
@@ -101,21 +102,56 @@
             }
         }
 
+        /// <summary>
+        /// Parses the main file. If it is unreadable, falls back to the last known-good ".bak" copy.
+        /// </summary>
+        private T? DeserializeOrRecover(ref string contents)
+        {
+            try
+            {
+                return JsonSerializer.Deserialize<T>(contents);
+            }
+            catch (JsonException) when (File.Exists(FileLocation + ".bak"))
+            {
+                string backup = File.ReadAllText(FileLocation + ".bak");
+                T? recovered = JsonSerializer.Deserialize<T>(backup);
+
+                App.Logger.WriteLine($"{LOG_IDENT_CLASS}::Load", "Main file was unreadable, recovered from the last known-good copy");
+                contents = backup;
+
+                // restore the readable copy as the main file so disk and memory agree
+                File.Copy(FileLocation + ".bak", FileLocation, true);
+                return recovered;
+            }
+        }
+
         public virtual void Save()
         {
             string LOG_IDENT = $"{LOG_IDENT_CLASS}::Save";
-            
-            App.Logger.WriteLine(LOG_IDENT, $"Saving to {FileLocation}...");
 
             Directory.CreateDirectory(Path.GetDirectoryName(FileLocation)!);
 
             try
             {
                 string contents = JsonSerializer.Serialize(Prop, new JsonSerializerOptions { WriteIndented = true });
+                string hash = MD5Hash.FromString(contents);
 
-                File.WriteAllText(FileLocation, contents);
+                // nothing changed since the last write, so don't touch the disk
+                if (hash == LastFileHash && File.Exists(FileLocation))
+                    return;
 
-                LastFileHash = MD5Hash.FromString(contents);
+                App.Logger.WriteLine(LOG_IDENT, $"Saving to {FileLocation}...");
+
+                // write to a temporary file first, then swap it in so a crash can never leave a half-written file
+                string temp = FileLocation + ".tmp";
+                File.WriteAllText(temp, contents);
+
+                if (File.Exists(FileLocation))
+                    File.Replace(temp, FileLocation, FileLocation + ".bak", true);
+                else
+                    File.Move(temp, FileLocation);
+
+                LastFileHash = hash;
             }
             catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
             {

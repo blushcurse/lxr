@@ -5,16 +5,6 @@ namespace Bloxstrap
 {
     internal class Installer
     {
-        /// <summary>
-        /// Should the release notes open when updating to this version?
-        /// </summary>
-        private const bool OpenReleaseNotes = true;
-        /// <summary>
-        /// Which version's release notes to open
-        /// Leave blank to use the current version
-        /// </summary>
-        private const string ForcedReleaseNotesVersion = "2.11.2";
-
         private static string DesktopShortcut => Path.Combine(Paths.Desktop, $"{App.ProjectName}.lnk");
 
         private static string StartMenuShortcut => Path.Combine(Paths.WindowsStartMenu, $"{App.ProjectName}.lnk");
@@ -301,6 +291,7 @@ namespace Bloxstrap
                 cleanupSequence.AddRange(new List<Action>
                 {
                     () => Directory.Delete(Paths.Modifications, true),
+                    () => Directory.Delete(Paths.Lxr, true),
                     () => Directory.Delete(Paths.Logs, true),
 
                     () => File.Delete(App.Settings.FileLocation)
@@ -466,34 +457,8 @@ namespace Bloxstrap
             if (currentVer is null)
                 return;
 
-            if (isAutoUpgrade)
-            {
-#pragma warning disable CS0162 // Unreachable code detected
-                if (OpenReleaseNotes)
-                {
-                    string releaseNoteVersion;
-                    if (!string.IsNullOrEmpty(ForcedReleaseNotesVersion) && Version.TryParse(ForcedReleaseNotesVersion, out _))
-                    {
-                        if (!string.IsNullOrEmpty(existingVer))
-                        {
-                            // dont show release notes if existingVer is greater than or equal to ForcedReleaseNotesVersion
-                            VersionComparison compareResult = Utilities.CompareVersions(existingVer, ForcedReleaseNotesVersion);
-                            if (compareResult == VersionComparison.Equal || compareResult == VersionComparison.GreaterThan)
-                                return;
-                        }
-
-                        releaseNoteVersion = ForcedReleaseNotesVersion;
-                    }
-                    else
-                    {
-                        releaseNoteVersion = currentVer;
-                    }
-
-                    Utilities.ShellExecute($"https://github.com/{App.ProjectRepository}/wiki/Release-notes-for-Bloxstrap-v{releaseNoteVersion}");
-                }
-#pragma warning restore CS0162 // Unreachable code detected
-            }
-            else
+            // upstream opened Bloxstrap release notes here; LXRStrap has none to show
+            if (!isAutoUpgrade)
             {
                 Frontend.ShowMessageBox(
                     string.Format(Strings.InstallChecker_Updated, currentVer),

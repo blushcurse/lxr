@@ -1,0 +1,74 @@
+<local:LxrWindow x:Class="Bloxstrap.LXR.UI.InstallerWindow"
+                 xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                 xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                 xmlns:local="clr-namespace:Bloxstrap.LXR.UI"
+                 Title="LXRStrap setup" Width="560" Height="460" ResizeMode="NoResize"
+                 Closing="Window_Closing">
+    <Grid Margin="36,8,36,28">
+        <!-- Step 1: choose -->
+        <Grid x:Name="SetupPanel">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
+
+            <StackPanel>
+                <TextBlock Text="Welcome to LXRStrap" Style="{StaticResource LxrTitle}" FontSize="26" />
+                <TextBlock Style="{StaticResource LxrDim}" TextWrapping="Wrap" Margin="0,8,0,0"
+                           Text="A lightweight launcher for Roblox with FastFlags, cursors and mods. Nothing is installed outside the folder below and your user shortcuts." />
+            </StackPanel>
+
+            <StackPanel Grid.Row="1" VerticalAlignment="Center">
+                <TextBlock Text="Install folder" Style="{StaticResource LxrFaint}" Margin="2,0,0,6" />
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+                    <TextBox x:Name="LocationBox" TextChanged="LocationBox_TextChanged" />
+                    <Button Grid.Column="1" Content="Browse" Margin="10,0,0,0" Click="Browse_Click" />
+                </Grid>
+                <TextBlock x:Name="ErrorText" Foreground="{DynamicResource LxrDangerBrush}" FontSize="12" Margin="2,8,0,0"
+                           TextWrapping="Wrap" Visibility="Collapsed" />
+
+                <CheckBox x:Name="DesktopBox" Content="Create a desktop shortcut" Margin="2,22,0,0" IsChecked="True" />
+                <CheckBox x:Name="StartMenuBox" Content="Create a Start menu shortcut" Margin="2,12,0,0" IsChecked="True" />
+            </StackPanel>
+
+            <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Right">
+                <Button Content="Cancel" Click="Cancel_Click" />
+                <Button x:Name="InstallButton" Content="Install" Margin="10,0,0,0" MinWidth="110"
+                        Style="{StaticResource LxrPrimaryButton}" Click="Install_Click" IsDefault="True" />
+            </StackPanel>
+        </Grid>
+
+        <!-- Step 2: working -->
+        <StackPanel x:Name="WorkPanel" VerticalAlignment="Center" Visibility="Collapsed">
+            <TextBlock Text="Installing…" Style="{StaticResource LxrTitle}" FontSize="22" />
+            <TextBlock Style="{StaticResource LxrDim}" Margin="0,6,0,22" Text="This only takes a moment." />
+            <ProgressBar IsIndeterminate="True" />
+        </StackPanel>
+
+        <!-- Step 3: done -->
+        <Grid x:Name="DonePanel" Visibility="Collapsed">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*" />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
+            <StackPanel VerticalAlignment="Center">
+                <Grid Width="56" Height="56" HorizontalAlignment="Left">
+                    <Ellipse Fill="{DynamicResource LxrSuccessSoftBrush}" />
+                    <TextBlock Text="&#xE73E;" Style="{StaticResource LxrIcon}" FontSize="24" Foreground="{DynamicResource LxrSuccessBrush}" />
+                </Grid>
+                <TextBlock Text="LXRStrap is ready" Style="{StaticResource LxrTitle}" FontSize="26" Margin="0,18,0,0" />
+                <TextBlock Style="{StaticResource LxrDim}" TextWrapping="Wrap" Margin="0,8,0,0"
+                           Text="Launching Roblox through LXRStrap downloads and prepares the game on first use. Your settings are saved automatically." />
+            </StackPanel>
+            <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Right">
+                <Button Content="Close" Click="Close_Click" />
+                <Button Content="Open LXRStrap" Margin="10,0,0,0" Style="{StaticResource LxrPrimaryButton}" Click="OpenApp_Click" />
+            </StackPanel>
+        </Grid>
+    </Grid>
+</local:LxrWindow>

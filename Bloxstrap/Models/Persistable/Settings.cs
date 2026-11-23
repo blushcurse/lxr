@@ -5,7 +5,6 @@ namespace Bloxstrap.Models.Persistable
     public class Settings
     {
         // bloxstrap configuration
-        public BootstrapperStyle BootstrapperStyle { get; set; } = BootstrapperStyle.FluentDialog;
         public BootstrapperIcon BootstrapperIcon { get; set; } = BootstrapperIcon.IconBloxstrap;
         public string BootstrapperTitle { get; set; } = App.ProjectName;
         public string BootstrapperIconCustomLocation { get; set; } = "";
@@ -19,7 +18,6 @@ namespace Bloxstrap.Models.Persistable
         public bool WPFSoftwareRender { get; set; } = false;
         public bool BackgroundUpdatesEnabled { get; set; } = false;
         public bool DebugDisableVersionPackageCleanup { get; set; } = false;
-        public string? SelectedCustomTheme { get; set; } = null;
 
         // integration configuration
         public bool EnableActivityTracking { get; set; } = true;

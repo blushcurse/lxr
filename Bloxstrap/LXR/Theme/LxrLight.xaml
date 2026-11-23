@@ -1,0 +1,76 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <!-- LXRStrap light palette: designed separately (soft lavender-white, deeper accent for contrast) -->
+
+    <LinearGradientBrush x:Key="LxrWindowFallbackBrush" StartPoint="0,0" EndPoint="1,1">
+        <GradientStop Color="#FFF3F5FF" Offset="0" />
+        <GradientStop Color="#FFEAEEFF" Offset="0.55" />
+        <GradientStop Color="#FFF6F1FF" Offset="1" />
+    </LinearGradientBrush>
+
+    <LinearGradientBrush x:Key="LxrWindowTintBrush" StartPoint="0,0" EndPoint="1,1">
+        <GradientStop Color="#C8F3F5FF" Offset="0" />
+        <GradientStop Color="#BEEAEEFF" Offset="0.55" />
+        <GradientStop Color="#C8F6F1FF" Offset="1" />
+    </LinearGradientBrush>
+
+    <RadialGradientBrush x:Key="LxrGlowABrush" Center="0.5,0.5" GradientOrigin="0.5,0.5" RadiusX="0.5" RadiusY="0.5">
+        <GradientStop Color="#557C8CFF" Offset="0" />
+        <GradientStop Color="#007C8CFF" Offset="1" />
+    </RadialGradientBrush>
+    <RadialGradientBrush x:Key="LxrGlowBBrush" Center="0.5,0.5" GradientOrigin="0.5,0.5" RadiusX="0.5" RadiusY="0.5">
+        <GradientStop Color="#4090E8F0" Offset="0" />
+        <GradientStop Color="#0090E8F0" Offset="1" />
+    </RadialGradientBrush>
+
+    <LinearGradientBrush x:Key="LxrSurfaceBrush" StartPoint="0,0" EndPoint="0,1">
+        <GradientStop Color="#C8FFFFFF" Offset="0" />
+        <GradientStop Color="#8CFFFFFF" Offset="1" />
+    </LinearGradientBrush>
+    <LinearGradientBrush x:Key="LxrSurfaceHoverBrush" StartPoint="0,0" EndPoint="0,1">
+        <GradientStop Color="#E6FFFFFF" Offset="0" />
+        <GradientStop Color="#B8FFFFFF" Offset="1" />
+    </LinearGradientBrush>
+    <SolidColorBrush x:Key="LxrSidebarBrush" Color="#66FFFFFF" />
+    <SolidColorBrush x:Key="LxrInputBrush" Color="#99FFFFFF" />
+    <SolidColorBrush x:Key="LxrHoverOverlayBrush" Color="#14503CFF" />
+    <SolidColorBrush x:Key="LxrPressOverlayBrush" Color="#14000000" />
+
+    <LinearGradientBrush x:Key="LxrBorderBrush" StartPoint="0,0" EndPoint="1,1">
+        <GradientStop Color="#FFFFFFFF" Offset="0" />
+        <GradientStop Color="#30506AA0" Offset="0.5" />
+        <GradientStop Color="#99FFFFFF" Offset="1" />
+    </LinearGradientBrush>
+    <SolidColorBrush x:Key="LxrBorderSoftBrush" Color="#22324678" />
+    <LinearGradientBrush x:Key="LxrTopHighlightBrush" StartPoint="0,0" EndPoint="1,0">
+        <GradientStop Color="#00FFFFFF" Offset="0" />
+        <GradientStop Color="#FFFFFFFF" Offset="0.5" />
+        <GradientStop Color="#00FFFFFF" Offset="1" />
+    </LinearGradientBrush>
+
+    <SolidColorBrush x:Key="LxrTextBrush" Color="#FF171A33" />
+    <SolidColorBrush x:Key="LxrTextDimBrush" Color="#FF4B5175" />
+    <SolidColorBrush x:Key="LxrTextFaintBrush" Color="#FF7B81A6" />
+
+    <LinearGradientBrush x:Key="LxrAccentBrush" StartPoint="0,0" EndPoint="1,1">
+        <GradientStop Color="#FF6C5CFF" Offset="0" />
+        <GradientStop Color="#FF2F8CFF" Offset="1" />
+    </LinearGradientBrush>
+    <SolidColorBrush x:Key="LxrAccentSolidBrush" Color="#FF5B5BF0" />
+    <SolidColorBrush x:Key="LxrAccentSoftBrush" Color="#245B5BF0" />
+    <SolidColorBrush x:Key="LxrOnAccentBrush" Color="#FFFFFFFF" />
+
+    <SolidColorBrush x:Key="LxrDangerBrush" Color="#FFD6304A" />
+    <SolidColorBrush x:Key="LxrDangerSoftBrush" Color="#26D6304A" />
+    <SolidColorBrush x:Key="LxrSuccessBrush" Color="#FF14946A" />
+    <SolidColorBrush x:Key="LxrSuccessSoftBrush" Color="#2614946A" />
+    <SolidColorBrush x:Key="LxrWarnBrush" Color="#FFB36A00" />
+    <SolidColorBrush x:Key="LxrWarnSoftBrush" Color="#26E69A1F" />
+
+    <SolidColorBrush x:Key="LxrToggleOffBrush" Color="#33324678" />
+    <SolidColorBrush x:Key="LxrToggleKnobBrush" Color="#FFFFFFFF" />
+    <SolidColorBrush x:Key="LxrPopupBrush" Color="#FFF7F8FF" />
+    <SolidColorBrush x:Key="LxrPopupBorderBrush" Color="#33324678" />
+    <SolidColorBrush x:Key="LxrScrimBrush" Color="#66101428" />
+</ResourceDictionary>

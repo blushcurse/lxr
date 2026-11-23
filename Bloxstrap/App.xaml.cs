@@ -23,9 +23,9 @@ namespace Bloxstrap
         public const string ProjectRepository = "bloxstraplabs/bloxstrap";
         // LXRStrap update source. Empty = update checking is disabled, so LXRStrap never self-replaces with upstream Bloxstrap.
         public const string UpdateRepository = "";
-        public const string ProjectDownloadLink = "https://bloxstraplabs.com";
-        public const string ProjectHelpLink = "https://bloxstraplabs.com/wiki/help/";
-        public const string ProjectSupportLink = "https://github.com/bloxstraplabs/bloxstrap/issues/new";
+        public const string ProjectDownloadLink = "https://github.com/blushcurse/lxr";
+        public const string ProjectHelpLink = "https://github.com/blushcurse/lxr#readme";
+        public const string ProjectSupportLink = "https://github.com/blushcurse/lxr/issues";
 
         public const string RobloxPlayerAppName = "RobloxPlayerBeta";
         public const string RobloxStudioAppName = "RobloxStudioBeta";
@@ -79,6 +79,8 @@ namespace Bloxstrap
             int exitCodeNum = (int)exitCode;
 
             Logger.WriteLine("App::Terminate", $"Terminating with exit code {exitCodeNum} ({exitCode})");
+
+            LXR.Services.AutoSave.Flush();
 
             Environment.Exit(exitCodeNum);
         }
@@ -185,6 +187,8 @@ namespace Bloxstrap
             Locale.Initialize();
 
             base.OnStartup(e);
+
+            LXR.Services.ThemeManager.Initialize();
 
             Logger.WriteLine(LOG_IDENT, $"Starting {ProjectName} v{Version}");
 
@@ -318,6 +322,8 @@ namespace Bloxstrap
                 Settings.Load();
                 State.Load();
                 FastFlags.Load();
+
+                LXR.Services.ThemeManager.Apply(Settings.Prop.Theme);
 
                 if (!Locale.SupportedLocales.ContainsKey(Settings.Prop.Locale))
                 {

@@ -1,0 +1,40 @@
+<local:LxrWindow x:Class="Bloxstrap.LXR.UI.ExceptionWindow"
+                 xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                 xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                 xmlns:local="clr-namespace:Bloxstrap.LXR.UI"
+                 Title="LXRStrap — Something went wrong" Width="640" Height="520" MinWidth="520" MinHeight="420">
+    <Grid Margin="28,6,28,24">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <StackPanel Grid.Row="0" Margin="0,0,0,16">
+            <StackPanel Orientation="Horizontal">
+                <Grid Width="40" Height="40" Margin="0,0,14,0">
+                    <Ellipse Fill="{DynamicResource LxrDangerSoftBrush}" />
+                    <TextBlock Text="&#xE783;" Style="{StaticResource LxrIcon}" FontSize="18" Foreground="{DynamicResource LxrDangerBrush}" />
+                </Grid>
+                <StackPanel VerticalAlignment="Center">
+                    <TextBlock Text="LXRStrap hit an unexpected error" Style="{StaticResource LxrHeading}" />
+                    <TextBlock x:Name="VersionText" Style="{StaticResource LxrFaint}" Margin="0,2,0,0" />
+                </StackPanel>
+            </StackPanel>
+            <TextBlock Style="{StaticResource LxrDim}" Margin="0,14,0,0"
+                       Text="Nothing has been sent anywhere. The details below stay on this PC. You can copy them if you want to ask for help." />
+        </StackPanel>
+
+        <Border Grid.Row="1" CornerRadius="{StaticResource LxrRadiusMd}" Background="{DynamicResource LxrInputBrush}"
+                BorderBrush="{DynamicResource LxrBorderSoftBrush}" BorderThickness="1">
+            <TextBox x:Name="DetailsBox" IsReadOnly="True" TextWrapping="NoWrap" FontFamily="Cascadia Mono, Consolas" FontSize="12"
+                     VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" Background="Transparent" BorderThickness="0" Padding="6" />
+        </Border>
+
+        <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,18,0,0">
+            <Button x:Name="OpenLogButton" Content="Open log file" Margin="0,0,10,0" />
+            <Button x:Name="CopyButton" Content="Copy details" Margin="0,0,10,0" />
+            <Button x:Name="CloseButton" Content="Close" Style="{StaticResource LxrPrimaryButton}" MinWidth="88" IsDefault="True" />
+        </StackPanel>
+    </Grid>
+</local:LxrWindow>

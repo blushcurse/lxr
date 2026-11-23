@@ -1,0 +1,34 @@
+<local:LxrWindow x:Class="Bloxstrap.LXR.UI.ConnectivityWindow"
+                 xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                 xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                 xmlns:local="clr-namespace:Bloxstrap.LXR.UI"
+                 xmlns:md="clr-namespace:Bloxstrap.UI.Elements.Controls"
+                 Title="LXRStrap" Width="520" SizeToContent="Height" ResizeMode="NoResize">
+    <Grid Margin="28,6,28,24">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="0,0,0,14">
+            <Grid Width="40" Height="40" Margin="0,0,14,0">
+                <Ellipse x:Name="IconBack" Fill="{DynamicResource LxrWarnSoftBrush}" />
+                <TextBlock x:Name="IconGlyph" Text="&#xE839;" Style="{StaticResource LxrIcon}" FontSize="18" Foreground="{DynamicResource LxrWarnBrush}" />
+            </Grid>
+            <TextBlock x:Name="TitleText" Style="{StaticResource LxrHeading}" VerticalAlignment="Center" TextWrapping="Wrap" MaxWidth="400" />
+        </StackPanel>
+
+        <md:MarkdownTextBlock x:Name="DescriptionText" Grid.Row="1" FontSize="13" LineHeight="20" TextWrapping="Wrap"
+                              Foreground="{DynamicResource LxrTextBrush}" Margin="0,0,0,14" />
+
+        <Border Grid.Row="2" CornerRadius="{StaticResource LxrRadiusMd}" Background="{DynamicResource LxrInputBrush}"
+                BorderBrush="{DynamicResource LxrBorderSoftBrush}" BorderThickness="1" Padding="12,10" Margin="0,0,0,20">
+            <TextBlock x:Name="ErrorText" Style="{StaticResource LxrFaint}" FontFamily="Cascadia Mono, Consolas" />
+        </Border>
+
+        <Button x:Name="CloseButton" Grid.Row="3" Content="Close" Style="{StaticResource LxrPrimaryButton}" MinWidth="88"
+                HorizontalAlignment="Right" IsDefault="True" />
+    </Grid>
+</local:LxrWindow>

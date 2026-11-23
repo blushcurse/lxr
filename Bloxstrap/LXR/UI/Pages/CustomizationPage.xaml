@@ -1,0 +1,176 @@
+<UserControl x:Class="Bloxstrap.LXR.UI.Pages.CustomizationPage"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:ui="clr-namespace:Bloxstrap.LXR.UI">
+    <Grid Margin="40,16,40,24">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <TextBlock Text="Customization" Style="{StaticResource LxrTitle}" FontSize="26" />
+
+        <StackPanel Grid.Row="1" Orientation="Horizontal" Margin="0,16,0,18">
+            <RadioButton x:Name="TabCursors" Content="Cursors" Style="{StaticResource LxrSegment}" GroupName="custab" IsChecked="True" Checked="Tab_Checked" />
+            <RadioButton x:Name="TabGraphics" Content="Graphics" Style="{StaticResource LxrSegment}" GroupName="custab" Checked="Tab_Checked" />
+            <RadioButton x:Name="TabAssets" Content="Assets &amp; mods" Style="{StaticResource LxrSegment}" GroupName="custab" Checked="Tab_Checked" />
+        </StackPanel>
+
+        <!-- ============ cursors ============ -->
+        <Grid x:Name="CursorsPanel" Grid.Row="2">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" MinWidth="280" />
+                <ColumnDefinition Width="16" />
+                <ColumnDefinition Width="1.2*" MinWidth="300" />
+            </Grid.ColumnDefinitions>
+
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="*" />
+                </Grid.RowDefinitions>
+
+                <Border x:Name="CursorDrop" AllowDrop="True" Height="120" CornerRadius="16" BorderThickness="1.5"
+                        BorderBrush="{DynamicResource LxrBorderBrush}" Background="{DynamicResource LxrSurfaceBrush}"
+                        DragEnter="Drop_DragEnter" DragLeave="Drop_DragLeave" Drop="CursorDrop_Drop">
+                    <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
+                        <TextBlock Text="&#xE896;" Style="{StaticResource LxrIcon}" FontSize="24" Foreground="{DynamicResource LxrAccentSolidBrush}" HorizontalAlignment="Center" />
+                        <TextBlock Text="Drop PNG, CUR, ICO, a folder or a ZIP" Style="{StaticResource LxrDim}" Margin="0,10,0,0" HorizontalAlignment="Center" />
+                        <TextBlock Text="or" Style="{StaticResource LxrFaint}" Margin="0,2,0,0" HorizontalAlignment="Center" />
+                    </StackPanel>
+                </Border>
+
+                <StackPanel Grid.Row="1" Orientation="Horizontal" Margin="0,10,0,10">
+                    <Button Content="Choose files…" Click="CursorBrowse_Click" />
+                    <Button Content="Choose folder…" Margin="8,0,0,0" Click="CursorFolder_Click" />
+                </StackPanel>
+
+                <ListBox x:Name="PackList" Grid.Row="2" Style="{StaticResource LxrListBox}" ItemContainerStyle="{StaticResource LxrListItem}"
+                         SelectionChanged="PackList_SelectionChanged">
+                    <ListBox.ItemTemplate>
+                        <DataTemplate>
+                            <StackPanel>
+                                <TextBlock Text="{Binding Name}" Style="{StaticResource LxrBody}" FontWeight="SemiBold" />
+                                <TextBlock Style="{StaticResource LxrFaint}" Margin="0,2,0,0">
+                                    <Run Text="{Binding SlotCount, Mode=OneWay}" /><Run Text=" cursor image(s)" />
+                                </TextBlock>
+                            </StackPanel>
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
+            </Grid>
+
+            <ContentControl Grid.Column="2" Style="{StaticResource LxrCard}">
+                <Grid Margin="26,22">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="*" />
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
+
+                    <StackPanel>
+                        <TextBlock x:Name="PackTitle" Text="Select a cursor pack" Style="{StaticResource LxrHeading}" FontSize="18" />
+                        <TextBlock x:Name="PackStatus" Style="{StaticResource LxrDim}" Margin="0,4,0,0" TextWrapping="Wrap"
+                                   Text="Imported packs are checked and previewed here before anything is changed." />
+                    </StackPanel>
+
+                    <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" Margin="0,18,0,12">
+                        <StackPanel>
+                            <ItemsControl x:Name="SlotPreviews">
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate>
+                                        <Grid Margin="0,0,0,10">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="72" />
+                                                <ColumnDefinition Width="*" />
+                                            </Grid.ColumnDefinitions>
+                                            <Border Width="64" Height="64" CornerRadius="12" Background="{DynamicResource LxrInputBrush}">
+                                                <Image Source="{Binding Image}" Width="40" Height="40" Stretch="Uniform" RenderOptions.BitmapScalingMode="NearestNeighbor" />
+                                            </Border>
+                                            <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                                                <TextBlock Text="{Binding Label}" Style="{StaticResource LxrBody}" FontWeight="SemiBold" />
+                                                <TextBlock Text="{Binding Note}" Style="{StaticResource LxrFaint}" TextWrapping="Wrap" />
+                                            </StackPanel>
+                                        </Grid>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                            <TextBlock x:Name="ImportMessages" Style="{StaticResource LxrDim}" TextWrapping="Wrap" Margin="0,8,0,0" />
+                        </StackPanel>
+                    </ScrollViewer>
+
+                    <StackPanel Grid.Row="2" Orientation="Horizontal">
+                        <Button x:Name="ApplyCursor" Content="Apply" Style="{StaticResource LxrPrimaryButton}" IsEnabled="False" Click="ApplyCursor_Click" />
+                        <Button x:Name="DeletePack" Content="Delete pack" Margin="8,0,0,0" IsEnabled="False" Click="DeletePack_Click" />
+                        <Button Content="Restore original cursors" Margin="8,0,0,0" Style="{StaticResource LxrGhostButton}" Click="RestoreCursors_Click" />
+                    </StackPanel>
+                </Grid>
+            </ContentControl>
+        </Grid>
+
+        <!-- ============ graphics ============ -->
+        <ScrollViewer x:Name="GraphicsPanel" Grid.Row="2" Visibility="Collapsed" VerticalScrollBarVisibility="Auto">
+            <StackPanel MaxWidth="820" HorizontalAlignment="Left">
+                <TextBlock Style="{StaticResource LxrDim}" TextWrapping="Wrap" Margin="0,0,0,14"
+                           Text="Only settings Roblox is known to read are listed here. Each one is a FastFlag, applied when Roblox starts. Leave a setting on Default to let Roblox decide." />
+                <TextBlock x:Name="GraphicsOff" Foreground="{DynamicResource LxrWarnBrush}" FontSize="12" Margin="0,0,0,12" TextWrapping="Wrap" Visibility="Collapsed"
+                           Text="FastFlags are switched off in Settings, so these have no effect until you turn them back on." />
+                <StackPanel x:Name="GraphicsRows" />
+            </StackPanel>
+        </ScrollViewer>
+
+        <!-- ============ assets & mods ============ -->
+        <ScrollViewer x:Name="AssetsPanel" Grid.Row="2" Visibility="Collapsed" VerticalScrollBarVisibility="Auto">
+            <StackPanel MaxWidth="820" HorizontalAlignment="Left">
+                <TextBlock Text="Quick changes" Style="{StaticResource LxrHeading}" Margin="0,0,0,8" />
+                <ui:OptionRow Title="Classic avatar background" Description="Replaces the avatar editor background with the old one.">
+                    <CheckBox x:Name="OldBackground" Click="Preset_Click" />
+                </ui:OptionRow>
+                <ui:OptionRow Title="Classic character sounds" Description="Restores the old footsteps, jump and get-up sounds.">
+                    <CheckBox x:Name="OldSounds" Click="Preset_Click" />
+                </ui:OptionRow>
+                <ui:OptionRow Title="Custom font" Description="Use your own TTF, OTF or TTC font in place of Roblox's.">
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock x:Name="FontName" Style="{StaticResource LxrFaint}" VerticalAlignment="Center" Margin="0,0,12,0" />
+                        <Button x:Name="FontButton" Content="Choose…" Click="Font_Click" />
+                    </StackPanel>
+                </ui:OptionRow>
+
+                <TextBlock Text="Mod packs" Style="{StaticResource LxrHeading}" Margin="0,26,0,4" />
+                <TextBlock Style="{StaticResource LxrDim}" TextWrapping="Wrap" Margin="0,0,0,12"
+                           Text="Drop a folder or ZIP that mirrors Roblox's own layout (content, ExtraContent, PlatformContent). Files are checked first, and turning a pack off restores the originals." />
+
+                <Border x:Name="ModDrop" AllowDrop="True" Height="96" CornerRadius="16" BorderThickness="1.5"
+                        BorderBrush="{DynamicResource LxrBorderBrush}" Background="{DynamicResource LxrSurfaceBrush}"
+                        DragEnter="Drop_DragEnter" DragLeave="Drop_DragLeave" Drop="ModDrop_Drop">
+                    <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
+                        <TextBlock Text="Drop a mod pack here" Style="{StaticResource LxrDim}" HorizontalAlignment="Center" />
+                        <StackPanel Orientation="Horizontal" Margin="0,8,0,0" HorizontalAlignment="Center">
+                            <Button Content="Choose folder…" Click="ModFolder_Click" />
+                            <Button Content="Choose ZIP…" Margin="8,0,0,0" Click="ModZip_Click" />
+                        </StackPanel>
+                    </StackPanel>
+                </Border>
+
+                <TextBlock x:Name="ModMessages" Style="{StaticResource LxrDim}" TextWrapping="Wrap" Margin="0,10,0,0" />
+                <ItemsControl x:Name="ModList" Margin="0,10,0,0">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <ui:OptionRow Title="{Binding Name}" Description="{Binding Summary}">
+                                <StackPanel Orientation="Horizontal">
+                                    <CheckBox IsChecked="{Binding Enabled, Mode=OneWay}" Click="ModToggle_Click" />
+                                    <Button Content="Delete" Margin="14,0,0,0" Click="ModDelete_Click" Style="{StaticResource LxrGhostButton}" />
+                                </StackPanel>
+                            </ui:OptionRow>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+                <TextBlock x:Name="ModEmpty" Text="No mod packs yet." Style="{StaticResource LxrFaint}" Margin="2,6,0,0" />
+
+                <Button Content="Open mods folder" Margin="0,18,0,0" HorizontalAlignment="Left" Style="{StaticResource LxrGhostButton}" Click="OpenMods_Click" />
+            </StackPanel>
+        </ScrollViewer>
+    </Grid>
+</UserControl>

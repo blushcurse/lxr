@@ -1,0 +1,159 @@
+<UserControl x:Class="Bloxstrap.LXR.UI.Pages.FastFlagsPage"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <UserControl.Resources>
+        <Style x:Key="StatusText" TargetType="TextBlock">
+            <Setter Property="FontSize" Value="11" />
+            <Setter Property="FontWeight" Value="SemiBold" />
+            <Setter Property="Foreground" Value="{DynamicResource LxrTextDimBrush}" />
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding StatusKey}" Value="ok">
+                    <Setter Property="Foreground" Value="{DynamicResource LxrSuccessBrush}" />
+                </DataTrigger>
+                <DataTrigger Binding="{Binding StatusKey}" Value="warn">
+                    <Setter Property="Foreground" Value="{DynamicResource LxrWarnBrush}" />
+                </DataTrigger>
+                <DataTrigger Binding="{Binding StatusKey}" Value="bad">
+                    <Setter Property="Foreground" Value="{DynamicResource LxrDangerBrush}" />
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+
+        <Style x:Key="DetailLabel" TargetType="TextBlock" BasedOn="{StaticResource LxrFaint}">
+            <Setter Property="Margin" Value="0,16,0,3" />
+        </Style>
+        <Style x:Key="DetailBody" TargetType="TextBlock" BasedOn="{StaticResource LxrBody}">
+            <Setter Property="TextWrapping" Value="Wrap" />
+            <Setter Property="LineHeight" Value="19" />
+        </Style>
+    </UserControl.Resources>
+
+    <Grid Margin="32,16,32,24">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*" MinWidth="320" />
+            <ColumnDefinition Width="16" />
+            <ColumnDefinition Width="1.15*" MinWidth="300" />
+        </Grid.ColumnDefinitions>
+
+        <!-- explorer -->
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+
+            <TextBlock Text="FastFlags" Style="{StaticResource LxrTitle}" FontSize="26" />
+
+            <Border x:Name="OffBanner" Grid.Row="1" Style="{StaticResource LxrChip}" Margin="0,10,0,0" HorizontalAlignment="Left"
+                    Background="{DynamicResource LxrWarnSoftBrush}" Visibility="Collapsed">
+                <TextBlock Foreground="{DynamicResource LxrWarnBrush}" FontSize="12" TextWrapping="Wrap"
+                           Text="FastFlags are switched off in Settings, so none of these apply at launch." />
+            </Border>
+
+            <TextBox x:Name="SearchBox" Grid.Row="2" Margin="0,14,0,0" TextChanged="SearchBox_TextChanged"
+                     ToolTip="Search names, descriptions, categories and related words" />
+
+            <WrapPanel x:Name="Chips" Grid.Row="3" Margin="0,12,0,6" />
+
+            <ListBox x:Name="FlagList" Grid.Row="4" Style="{StaticResource LxrListBox}" ItemContainerStyle="{StaticResource LxrListItem}"
+                     SelectionChanged="FlagList_SelectionChanged">
+                <ListBox.ItemTemplate>
+                    <DataTemplate>
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+                            <StackPanel>
+                                <TextBlock Text="{Binding Title}" Style="{StaticResource LxrBody}" FontWeight="SemiBold" TextTrimming="CharacterEllipsis" />
+                                <StackPanel Orientation="Horizontal" Margin="0,3,0,0">
+                                    <TextBlock Text="{Binding CategoryText}" Style="{StaticResource LxrFaint}" />
+                                    <TextBlock Text=" · " Style="{StaticResource LxrFaint}" />
+                                    <TextBlock Text="{Binding StatusText}" Style="{StaticResource StatusText}" VerticalAlignment="Center" />
+                                </StackPanel>
+                            </StackPanel>
+                            <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
+                                <TextBlock Text="{Binding ValueText}" Style="{StaticResource LxrDim}" Margin="0,0,10,0" VerticalAlignment="Center" />
+                                <CheckBox IsChecked="{Binding IsOn, Mode=OneWay}" Visibility="{Binding ToggleVisibility}" Click="RowToggle_Click" />
+                            </StackPanel>
+                        </Grid>
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+            </ListBox>
+        </Grid>
+
+        <!-- detail -->
+        <ContentControl Grid.Column="2" Style="{StaticResource LxrCard}" Margin="0,48,0,0">
+            <Grid>
+                <StackPanel x:Name="EmptyState" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="24">
+                    <TextBlock Text="&#xE721;" Style="{StaticResource LxrIcon}" FontSize="30" Foreground="{DynamicResource LxrTextFaintBrush}" HorizontalAlignment="Center" />
+                    <TextBlock Text="Pick a flag to see what it does" Style="{StaticResource LxrDim}" Margin="0,12,0,0" HorizontalAlignment="Center" />
+                    <TextBlock Text="Search above, or browse by category." Style="{StaticResource LxrFaint}" Margin="0,4,0,0" HorizontalAlignment="Center" />
+                </StackPanel>
+
+                <Grid x:Name="DetailRoot" Visibility="Collapsed">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="*" />
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
+
+                    <ScrollViewer VerticalScrollBarVisibility="Auto">
+                        <StackPanel Margin="26,24,26,8">
+                            <TextBlock x:Name="DTitle" Style="{StaticResource LxrHeading}" FontSize="19" TextWrapping="Wrap" />
+                            <TextBlock x:Name="DName" Style="{StaticResource LxrFaint}" FontFamily="Consolas" Margin="0,4,0,0" TextWrapping="Wrap" />
+                            <WrapPanel Margin="0,12,0,0">
+                                <Border Style="{StaticResource LxrChip}" Margin="0,0,8,0"><TextBlock x:Name="DStatus" FontSize="11" FontWeight="SemiBold" /></Border>
+                                <Border Style="{StaticResource LxrChip}"><TextBlock x:Name="DCategory" FontSize="11" Foreground="{DynamicResource LxrTextDimBrush}" /></Border>
+                            </WrapPanel>
+
+                            <TextBlock x:Name="DSummary" Style="{StaticResource DetailBody}" Margin="0,16,0,0" />
+
+                            <TextBlock Text="CURRENT VALUE" Style="{StaticResource DetailLabel}" />
+                            <TextBlock x:Name="DCurrent" Style="{StaticResource DetailBody}" FontFamily="Consolas" />
+                            <TextBlock Text="DEFAULT" Style="{StaticResource DetailLabel}" />
+                            <TextBlock x:Name="DDefault" Style="{StaticResource DetailBody}" />
+
+                            <TextBlock Text="EFFECT" Style="{StaticResource DetailLabel}" />
+                            <TextBlock x:Name="DEffect" Style="{StaticResource DetailBody}" />
+                            <TextBlock Text="PERFORMANCE" Style="{StaticResource DetailLabel}" />
+                            <TextBlock x:Name="DPerformance" Style="{StaticResource DetailBody}" />
+                            <TextBlock Text="VISUAL" Style="{StaticResource DetailLabel}" />
+                            <TextBlock x:Name="DVisual" Style="{StaticResource DetailBody}" />
+                            <TextBlock Text="COMPATIBILITY" Style="{StaticResource DetailLabel}" />
+                            <TextBlock x:Name="DCompat" Style="{StaticResource DetailBody}" />
+                            <TextBlock Text="HOW SURE ARE WE" Style="{StaticResource DetailLabel}" />
+                            <TextBlock x:Name="DConfidence" Style="{StaticResource DetailBody}" />
+                            <TextBlock x:Name="DLocked" Style="{StaticResource DetailBody}" Foreground="{DynamicResource LxrWarnBrush}" Margin="0,14,0,0" Visibility="Collapsed" />
+                        </StackPanel>
+                    </ScrollViewer>
+
+                    <!-- editor -->
+                    <Border Grid.Row="1" BorderBrush="{DynamicResource LxrBorderSoftBrush}" BorderThickness="0,1,0,0" Padding="22,16">
+                        <StackPanel>
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+                                <Grid x:Name="EditorHost" />
+                                <Button x:Name="ResetButton" Grid.Column="1" Content="Reset" Margin="12,0,0,0" Click="Reset_Click" />
+                            </Grid>
+                            <TextBlock x:Name="EditorError" Foreground="{DynamicResource LxrDangerBrush}" FontSize="12" Margin="0,8,0,0"
+                                       TextWrapping="Wrap" Visibility="Collapsed" />
+                        </StackPanel>
+                    </Border>
+                </Grid>
+            </Grid>
+        </ContentControl>
+
+        <!-- page actions float under the title area -->
+        <StackPanel Grid.ColumnSpan="3" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,2,0,0">
+            <CheckBox x:Name="ActiveOnly" Content="Active only" Margin="0,0,18,0" VerticalAlignment="Center" Click="ActiveOnly_Click" />
+            <Button Content="Add custom" Click="AddCustom_Click" Style="{StaticResource LxrGhostButton}" />
+            <Button Content="Restore defaults" Margin="8,0,0,0" Click="RestoreAll_Click" Style="{StaticResource LxrGhostButton}" />
+        </StackPanel>
+    </Grid>
+</UserControl>

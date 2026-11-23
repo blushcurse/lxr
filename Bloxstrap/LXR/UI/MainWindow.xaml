@@ -1,0 +1,46 @@
+<local:LxrWindow x:Class="Bloxstrap.LXR.UI.MainWindow"
+                 xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                 xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                 xmlns:local="clr-namespace:Bloxstrap.LXR.UI"
+                 Title="LXRStrap" Width="1080" Height="720" MinWidth="880" MinHeight="580">
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="232" />
+            <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
+
+        <!-- sidebar -->
+        <Border Background="{DynamicResource LxrSidebarBrush}" BorderBrush="{DynamicResource LxrBorderSoftBrush}" BorderThickness="0,0,1,0">
+            <Grid Margin="14,6,14,16">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
+
+                <StackPanel Orientation="Horizontal" Margin="8,8,0,22">
+                    <Border Width="34" Height="34" CornerRadius="11" Background="{DynamicResource LxrAccentBrush}">
+                        <TextBlock Text="LXR" FontFamily="{StaticResource LxrDisplayFont}" FontSize="12" FontWeight="Bold"
+                                   Foreground="{DynamicResource LxrOnAccentBrush}" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                    </Border>
+                    <TextBlock Text="LXRStrap" Style="{StaticResource LxrHeading}" Margin="12,0,0,0" VerticalAlignment="Center" />
+                </StackPanel>
+
+                <StackPanel Grid.Row="1">
+                    <RadioButton x:Name="NavHome" Content="Home" Tag="&#xE80F;" Style="{StaticResource LxrNavItem}" Checked="Nav_Checked" GroupName="nav" IsChecked="True" />
+                    <RadioButton x:Name="NavFlags" Content="FastFlags" Tag="&#xE7C1;" Style="{StaticResource LxrNavItem}" Checked="Nav_Checked" GroupName="nav" />
+                    <RadioButton x:Name="NavCustom" Content="Customization" Tag="&#xE790;" Style="{StaticResource LxrNavItem}" Checked="Nav_Checked" GroupName="nav" />
+                    <RadioButton x:Name="NavSettings" Content="Settings" Tag="&#xE713;" Style="{StaticResource LxrNavItem}" Checked="Nav_Checked" GroupName="nav" />
+                    <RadioButton x:Name="NavAbout" Content="About" Tag="&#xE946;" Style="{StaticResource LxrNavItem}" Checked="Nav_Checked" GroupName="nav" />
+                </StackPanel>
+
+                <StackPanel Grid.Row="2" Orientation="Horizontal" Margin="10,0,0,0">
+                    <Ellipse x:Name="SaveDot" Width="8" Height="8" Fill="{DynamicResource LxrSuccessBrush}" VerticalAlignment="Center" />
+                    <TextBlock x:Name="SaveText" Text="All changes saved" Style="{StaticResource LxrFaint}" Margin="8,0,0,0" />
+                </StackPanel>
+            </Grid>
+        </Border>
+
+        <ContentControl x:Name="PageHost" Grid.Column="1" Margin="0" IsTabStop="False" />
+    </Grid>
+</local:LxrWindow>

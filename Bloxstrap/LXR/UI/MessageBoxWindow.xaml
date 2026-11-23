@@ -1,0 +1,35 @@
+<local:LxrWindow x:Class="Bloxstrap.LXR.UI.MessageBoxWindow"
+                 xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                 xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                 xmlns:local="clr-namespace:Bloxstrap.LXR.UI"
+                 xmlns:md="clr-namespace:Bloxstrap.UI.Elements.Controls"
+                 Title="LXRStrap" Width="460" MinWidth="460" MaxWidth="560" SizeToContent="Height"
+                 ResizeMode="NoResize" ShowInTaskbar="True">
+    <Grid Margin="28,6,28,24">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <Grid Grid.Row="0" Margin="0,4,0,24">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+
+            <Grid x:Name="IconHost" Width="44" Height="44" VerticalAlignment="Top" Margin="0,0,18,0">
+                <Ellipse x:Name="IconBack" Fill="{DynamicResource LxrAccentSoftBrush}" />
+                <TextBlock x:Name="IconGlyph" Style="{StaticResource LxrIcon}" FontSize="20" Foreground="{DynamicResource LxrAccentSolidBrush}" />
+            </Grid>
+
+            <md:MarkdownTextBlock x:Name="MessageText" Grid.Column="1" FontSize="13" LineHeight="20" TextWrapping="Wrap"
+                                  Foreground="{DynamicResource LxrTextBrush}" VerticalAlignment="Center" />
+        </Grid>
+
+        <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Right">
+            <Button x:Name="ButtonThree" Margin="10,0,0,0" MinWidth="88" Visibility="Collapsed" />
+            <Button x:Name="ButtonTwo" Margin="10,0,0,0" MinWidth="88" Visibility="Collapsed" />
+            <Button x:Name="ButtonOne" Margin="10,0,0,0" MinWidth="88" Style="{StaticResource LxrPrimaryButton}" IsDefault="True" />
+        </StackPanel>
+    </Grid>
+</local:LxrWindow>
