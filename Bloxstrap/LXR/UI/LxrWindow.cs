@@ -26,10 +26,10 @@ namespace Bloxstrap.LXR.UI
                 close.Click += (_, _) => Close();
 
             if (GetTemplateChild("PART_Minimize") is Button minimize)
-                minimize.Click += (_, _) => WindowState = WindowState.Minimized;
+                minimize.Click += (_, _) => WindowState = System.Windows.WindowState.Minimized;
 
             if (GetTemplateChild("PART_Maximize") is Button maximize)
-                maximize.Click += (_, _) => WindowState = WindowState == WindowState.Maximized ? WindowState.Normal : WindowState.Maximized;
+                maximize.Click += (_, _) => WindowState = WindowState == System.Windows.WindowState.Maximized ? System.Windows.WindowState.Normal : System.Windows.WindowState.Maximized;
         }
 
         protected override void OnSourceInitialized(EventArgs e)
