@@ -79,7 +79,7 @@ namespace Bloxstrap.LXR.UI
                 return;
 
             bool shouldRun = Animated && Motion.Ambient && IsLoaded && IsVisible
-                && _window is { IsActive: true, WindowState: not WindowState.Minimized };
+                && _window is { IsActive: true, WindowState: not System.Windows.WindowState.Minimized };
 
             if (shouldRun && !_running)
             {
