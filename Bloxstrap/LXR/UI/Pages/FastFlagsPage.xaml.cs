@@ -259,6 +259,15 @@ namespace Bloxstrap.LXR.UI.Pages
             _loadingDetail = false;
         }
 
+        private void Profiles_Click(object sender, RoutedEventArgs e)
+        {
+            var dialog = new ProfilesWindow { Owner = Window.GetWindow(this) };
+            dialog.ShowDialog();
+
+            if (dialog.Applied)
+                Reload();
+        }
+
         private void AddCustom_Click(object sender, RoutedEventArgs e)
         {
             var dialog = new AddFlagWindow { Owner = Window.GetWindow(this) };

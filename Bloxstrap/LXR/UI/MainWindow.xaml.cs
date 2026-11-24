@@ -20,8 +20,20 @@ namespace Bloxstrap.LXR.UI
             Show(nameof(NavHome));
 
             // The indicator only changes when something is actually written; nothing polls.
+            ApplyScale();
+            ThemeManager.AppearanceChanged += OnAppearanceChanged;
             AutoSave.Saved += OnSaved;
             Closing += OnClosing;
+        }
+
+        private void OnAppearanceChanged(object? sender, EventArgs e) => ApplyScale();
+
+        private void ApplyScale()
+        {
+            double scale = Math.Clamp(App.Settings.Prop.InterfaceScale, 80, 140) / 100.0;
+
+            if (Content is FrameworkElement root)
+                root.LayoutTransform = scale == 1.0 ? null : new System.Windows.Media.ScaleTransform(scale, scale);
         }
 
         private void OnSaved(object? sender, EventArgs e)
@@ -33,6 +45,7 @@ namespace Bloxstrap.LXR.UI
         private void OnClosing(object? sender, CancelEventArgs e)
         {
             AutoSave.Saved -= OnSaved;
+            ThemeManager.AppearanceChanged -= OnAppearanceChanged;
             AutoSave.Flush();
         }
 
@@ -48,6 +61,7 @@ namespace Bloxstrap.LXR.UI
             {
                 "flags" => NavFlags,
                 "customization" => NavCustom,
+                "updates" => NavUpdates,
                 "settings" => NavSettings,
                 "about" => NavAbout,
                 _ => NavHome
@@ -64,6 +78,7 @@ namespace Bloxstrap.LXR.UI
                 {
                     nameof(NavFlags) => new FastFlagsPage(),
                     nameof(NavCustom) => new CustomizationPage(),
+                    nameof(NavUpdates) => new UpdatesPage(),
                     nameof(NavSettings) => new SettingsPage(this),
                     nameof(NavAbout) => new AboutPage(),
                     _ => new HomePage(this)

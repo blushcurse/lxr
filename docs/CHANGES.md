@@ -15,6 +15,16 @@ Roblox protocol handlers (`roblox://`) are registered by whichever launcher inst
 - Removed: all old bootstrapper styles, custom-theme/bootstrapper editor, language selector, old settings pages, supporter/contributor pages, release-notes auto-open, upstream update check, telemetry.
 - New app icon.
 
+## Stage 3: black redesign and extras
+- True-black dark theme, brighter glass edges, hover rim glow and lift on cards, smoother eased animations.
+- New monochrome liquid-glass orb logo and icon; animated orb pauses when its window is inactive, hidden or minimized.
+- Roblox update log: records each Roblox install or update LXRStrap performs (version, time, channel); Home shows an unread banner.
+- FastFlag profiles: save, apply, export and import named flag sets.
+- Appearance: accent colour presets and custom colour, animation level (Full, Reduced, Off), interface size.
+- Graphics tab lists every editable graphics-related flag in the catalog, marked when not fully verified.
+- Backup and restore of settings, FastFlags and profiles; clear Roblox logs; schedule a clean Roblox reinstall.
+- Not built: Robux purchase confirmation. Purchases happen inside Roblox; confirming them would mean intercepting or modifying the Roblox client, which LXRStrap does not do.
+
 ## Known limits
 - Not compiled or run by the author yet (no Windows/.NET SDK available). First CI build is the first test.
 - New UI is English only. Other locale files still contain old strings for removed screens.

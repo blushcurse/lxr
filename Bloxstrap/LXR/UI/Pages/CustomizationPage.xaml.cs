@@ -274,6 +274,25 @@ namespace Bloxstrap.LXR.UI.Pages
                 GraphicsRows.Children.Add(row);
             }
 
+            // everything else Roblox is known to read in the graphics-related categories, labelled by how sure we are
+            string[] categories = { "Graphics", "Lighting", "Rendering", "Performance", "Textures" };
+            var extra = FlagCatalog.All
+                .Where(x => x.IsEditable && !GraphicsFlags.Contains(x.Name) && categories.Contains(x.PrimaryCategory))
+                .OrderBy(x => Array.IndexOf(categories, x.PrimaryCategory)).ThenBy(x => x.Title).ToList();
+
+            if (extra.Count > 0)
+            {
+                var heading = new TextBlock { Text = "More options", Margin = new Thickness(0, 22, 0, 8) };
+                heading.SetResourceReference(StyleProperty, "LxrHeading");
+                GraphicsRows.Children.Add(heading);
+
+                foreach (var def in extra)
+                {
+                    string caution = def.Status == FlagStatus.Allowlisted ? "" : "  (Not fully verified)";
+                    GraphicsRows.Children.Add(new OptionRow { Title = def.Title + caution, Description = def.Summary, Content = BuildEditor(def) });
+                }
+            }
+
             _building = false;
         }
 
@@ -285,6 +304,23 @@ namespace Bloxstrap.LXR.UI.Pages
             {
                 var box = new CheckBox { IsChecked = string.Equals(current, "True", StringComparison.OrdinalIgnoreCase) };
                 box.Click += (_, _) => FlagService.Set(def, box.IsChecked == true ? "True" : null);
+                return box;
+            }
+
+            if (def.Options is not { Length: > 0 })
+            {
+                var box = new TextBox { Width = 120, Text = current ?? "", ToolTip = "Leave empty for Roblox's default" };
+                box.LostFocus += (_, _) =>
+                {
+                    string value = box.Text.Trim();
+                    string? error = FlagService.Set(def, value.Length == 0 ? null : value);
+
+                    if (error is not null)
+                    {
+                        box.Text = FlagService.Get(def.Name) ?? "";
+                        Frontend.ShowMessageBox(error, MessageBoxImage.Warning);
+                    }
+                };
                 return box;
             }
 

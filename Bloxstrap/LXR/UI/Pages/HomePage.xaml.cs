@@ -28,6 +28,10 @@ namespace Bloxstrap.LXR.UI.Pages
             string? cursor = CursorService.AppliedPackName;
             CustomTileText.Text = cursor is null ? "Cursors, graphics and mods." : $"Cursor pack: {cursor}.";
 
+            int unread = Services.RobloxUpdateLog.UnreadCount();
+            UpdateBanner.Visibility = unread > 0 ? Visibility.Visible : Visibility.Collapsed;
+            UpdateBannerText.Text = unread == 1 ? "Roblox was updated since you last looked. See the details." : $"Roblox was updated {unread} times since you last looked. See the details.";
+
             RunningNote.Visibility = Mutex.TryOpenExisting("ROBLOX_singletonMutex", out var m)
                 ? Visibility.Visible : Visibility.Collapsed;
             m?.Dispose();

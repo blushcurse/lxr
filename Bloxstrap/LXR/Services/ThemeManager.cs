@@ -1,4 +1,5 @@
 using System.Windows;
+using System.Windows.Media;
 using Microsoft.Win32;
 
 namespace Bloxstrap.LXR.Services
@@ -17,6 +18,66 @@ namespace Bloxstrap.LXR.Services
         public static Theme Current { get; private set; } = Theme.Dark;
 
         public static event EventHandler? ThemeChanged;
+
+        /// <summary>Raised when accent or interface size changes.</summary>
+        public static event EventHandler? AppearanceChanged;
+
+        private const string AccentTag = "LxrAccent";
+
+        public static readonly IReadOnlyDictionary<string, string> AccentPresets = new Dictionary<string, string>
+        {
+            ["Default"] = "",
+            ["Ice"] = "#9BD4FF",
+            ["Violet"] = "#B79CFF",
+            ["Mint"] = "#7CF0C8",
+            ["Rose"] = "#FF9EC4",
+            ["Amber"] = "#FFC773",
+        };
+
+        public static bool TryParseAccent(string value, out Color color)
+        {
+            color = default;
+
+            if (AccentPresets.TryGetValue(value, out string? hex))
+                value = hex;
+
+            if (string.IsNullOrEmpty(value) || !Regex.IsMatch(value, "^#[0-9A-Fa-f]{6}$"))
+                return false;
+
+            color = (Color)ColorConverter.ConvertFromString(value);
+            return true;
+        }
+
+        /// <summary>Overrides the accent brushes on top of the current palette. "Default" removes the override.</summary>
+        public static void ApplyAccent(string value)
+        {
+            var resources = Application.Current.Resources.MergedDictionaries;
+
+            foreach (var old in resources.Where(x => x.Contains(AccentTag)).ToList())
+                resources.Remove(old);
+
+            if (TryParseAccent(value, out Color color))
+            {
+                Color deep = Color.FromRgb((byte)(color.R * 0.78), (byte)(color.G * 0.78), (byte)(color.B * 0.78));
+                double luminance = (0.2126 * color.R + 0.7152 * color.G + 0.0722 * color.B) / 255;
+
+                var gradient = new LinearGradientBrush { StartPoint = new Point(0, 0), EndPoint = new Point(1, 1) };
+                gradient.GradientStops.Add(new GradientStop(color, 0));
+                gradient.GradientStops.Add(new GradientStop(deep, 1));
+
+                var dict = new ResourceDictionary();
+                dict[AccentTag] = true;
+                dict["LxrAccentBrush"] = gradient;
+                dict["LxrAccentSolidBrush"] = new SolidColorBrush(color);
+                dict["LxrAccentSoftBrush"] = new SolidColorBrush(Color.FromArgb(0x30, color.R, color.G, color.B));
+                dict["LxrOnAccentBrush"] = new SolidColorBrush(luminance > 0.55 ? Colors.Black : Colors.White);
+                resources.Add(dict);
+            }
+
+            AppearanceChanged?.Invoke(null, EventArgs.Empty);
+        }
+
+        public static void NotifyAppearanceChanged() => AppearanceChanged?.Invoke(null, EventArgs.Empty);
 
         /// <summary>Loads the shared control styles once, then applies the saved theme.</summary>
         public static void Initialize()
@@ -52,7 +113,10 @@ namespace Bloxstrap.LXR.Services
             var existing = resources.FirstOrDefault(x => x.Contains(PaletteTag));
 
             if (existing is not null && Current == final)
+            {
+                ApplyAccent(App.Settings.Prop.AccentColor);
                 return;
+            }
 
             string file = final == Theme.Light ? "LxrLight" : "LxrDark";
             var palette = new ResourceDictionary { Source = new Uri($"pack://application:,,,/LXR/Theme/{file}.xaml", UriKind.Absolute) };
@@ -63,6 +127,7 @@ namespace Bloxstrap.LXR.Services
 
             resources.Add(palette); // appended: WpfUiWindow addresses the dictionaries by index, so the existing order must not shift
             Current = final;
+            ApplyAccent(App.Settings.Prop.AccentColor); // the palette was re-added last, so put the accent back on top
 
             foreach (Window window in Application.Current.Windows)
             {

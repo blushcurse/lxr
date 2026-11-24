@@ -13,10 +13,7 @@
         </Grid.RowDefinitions>
 
         <StackPanel Grid.Row="0" Orientation="Horizontal">
-            <Border Width="52" Height="52" CornerRadius="16" Background="{DynamicResource LxrAccentBrush}">
-                <TextBlock Text="LXR" FontFamily="{StaticResource LxrDisplayFont}" FontSize="17" FontWeight="Bold"
-                           Foreground="{DynamicResource LxrOnAccentBrush}" HorizontalAlignment="Center" VerticalAlignment="Center" />
-            </Border>
+            <local:LiquidOrb Width="60" Height="75" VerticalAlignment="Top" />
             <StackPanel Margin="16,0,0,0" VerticalAlignment="Center">
                 <TextBlock Text="LXRStrap" Style="{StaticResource LxrTitle}" FontSize="22" />
                 <TextBlock Text="Getting Roblox ready" Style="{StaticResource LxrFaint}" Margin="0,2,0,0" />

@@ -19,10 +19,7 @@
                 </Grid.RowDefinitions>
 
                 <StackPanel Orientation="Horizontal" Margin="8,8,0,22">
-                    <Border Width="34" Height="34" CornerRadius="11" Background="{DynamicResource LxrAccentBrush}">
-                        <TextBlock Text="LXR" FontFamily="{StaticResource LxrDisplayFont}" FontSize="12" FontWeight="Bold"
-                                   Foreground="{DynamicResource LxrOnAccentBrush}" HorizontalAlignment="Center" VerticalAlignment="Center" />
-                    </Border>
+                    <local:LiquidOrb Width="30" Height="38" Animated="False" ShowDrip="False" />
                     <TextBlock Text="LXRStrap" Style="{StaticResource LxrHeading}" Margin="12,0,0,0" VerticalAlignment="Center" />
                 </StackPanel>
 
@@ -30,6 +27,7 @@
                     <RadioButton x:Name="NavHome" Content="Home" Tag="&#xE80F;" Style="{StaticResource LxrNavItem}" Checked="Nav_Checked" GroupName="nav" IsChecked="True" />
                     <RadioButton x:Name="NavFlags" Content="FastFlags" Tag="&#xE7C1;" Style="{StaticResource LxrNavItem}" Checked="Nav_Checked" GroupName="nav" />
                     <RadioButton x:Name="NavCustom" Content="Customization" Tag="&#xE790;" Style="{StaticResource LxrNavItem}" Checked="Nav_Checked" GroupName="nav" />
+                    <RadioButton x:Name="NavUpdates" Content="Roblox updates" Tag="&#xE895;" Style="{StaticResource LxrNavItem}" Checked="Nav_Checked" GroupName="nav" />
                     <RadioButton x:Name="NavSettings" Content="Settings" Tag="&#xE713;" Style="{StaticResource LxrNavItem}" Checked="Nav_Checked" GroupName="nav" />
                     <RadioButton x:Name="NavAbout" Content="About" Tag="&#xE946;" Style="{StaticResource LxrNavItem}" Checked="Nav_Checked" GroupName="nav" />
                 </StackPanel>

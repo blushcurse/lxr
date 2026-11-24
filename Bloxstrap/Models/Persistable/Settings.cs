@@ -10,6 +10,11 @@ namespace Bloxstrap.Models.Persistable
         public string BootstrapperIconCustomLocation { get; set; } = "";
         public Theme Theme { get; set; } = Theme.Default;
         [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
+        // LXRStrap appearance
+        public string AccentColor { get; set; } = "Default";
+        public string AnimationLevel { get; set; } = "Full";
+        public int InterfaceScale { get; set; } = 100;
+
         public bool DeveloperMode { get; set; } = false;
         public bool CheckForUpdates { get; set; } = true;
         public bool ConfirmLaunches { get; set; } = false;

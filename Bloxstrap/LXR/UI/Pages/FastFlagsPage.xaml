@@ -152,7 +152,8 @@
         <!-- page actions float under the title area -->
         <StackPanel Grid.ColumnSpan="3" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,2,0,0">
             <CheckBox x:Name="ActiveOnly" Content="Active only" Margin="0,0,18,0" VerticalAlignment="Center" Click="ActiveOnly_Click" />
-            <Button Content="Add custom" Click="AddCustom_Click" Style="{StaticResource LxrGhostButton}" />
+            <Button Content="Profiles" Click="Profiles_Click" Style="{StaticResource LxrGhostButton}" />
+            <Button Content="Add custom" Margin="8,0,0,0" Click="AddCustom_Click" Style="{StaticResource LxrGhostButton}" />
             <Button Content="Restore defaults" Margin="8,0,0,0" Click="RestoreAll_Click" Style="{StaticResource LxrGhostButton}" />
         </StackPanel>
     </Grid>

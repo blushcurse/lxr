@@ -1173,6 +1173,8 @@ namespace Bloxstrap
 
             MigrateCompatibilityFlags();
 
+            LXR.Services.RobloxUpdateLog.Record(IsStudioLaunch ? "Studio" : "Player", AppData.DistributionState.VersionGuid, _latestVersionGuid, _latestVersion?.ToString(), Deployment.Channel);
+
             AppData.DistributionState.VersionGuid = _latestVersionGuid;
 
             AppData.DistributionState.PackageHashes.Clear();

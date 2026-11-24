@@ -9,9 +9,18 @@ namespace Bloxstrap.LXR.UI
     {
         private static readonly IEasingFunction EaseOut = new CubicEase { EasingMode = EasingMode.EaseOut };
 
+        /// <summary>"Full" plays page transitions; "Reduced" and "Off" skip them.</summary>
+        public static bool PageTransitions => App.Settings.Prop.AnimationLevel == "Full";
+
+        /// <summary>"Off" also stops the ambient orb animation.</summary>
+        public static bool Ambient => App.Settings.Prop.AnimationLevel != "Off";
+
         /// <summary>Fade + small upward slide. Cleans up after itself so no transform stays on the element.</summary>
         public static void EnterPage(FrameworkElement element)
         {
+            if (!PageTransitions)
+                return;
+
             var slide = new TranslateTransform(0, 14);
             element.RenderTransform = slide;
 
@@ -29,6 +38,9 @@ namespace Bloxstrap.LXR.UI
 
         public static void Pulse(FrameworkElement element)
         {
+            if (!PageTransitions)
+                return;
+
             element.BeginAnimation(UIElement.OpacityProperty, new DoubleAnimation(0.35, 1, TimeSpan.FromMilliseconds(420)) { EasingFunction = EaseOut });
         }
     }

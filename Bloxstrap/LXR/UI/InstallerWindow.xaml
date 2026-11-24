@@ -14,6 +14,7 @@
             </Grid.RowDefinitions>
 
             <StackPanel>
+                <local:LiquidOrb Width="64" Height="80" HorizontalAlignment="Left" Margin="0,0,0,10" />
                 <TextBlock Text="Welcome to LXRStrap" Style="{StaticResource LxrTitle}" FontSize="26" />
                 <TextBlock Style="{StaticResource LxrDim}" TextWrapping="Wrap" Margin="0,8,0,0"
                            Text="A lightweight launcher for Roblox with FastFlags, cursors and mods. Nothing is installed outside the folder below and your user shortcuts." />

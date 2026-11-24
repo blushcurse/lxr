@@ -135,7 +135,85 @@ namespace Bloxstrap.LXR.UI.Pages
                 segment.Children.Add(option);
             }
 
-            p.Children.Add(Row("Theme", "Dark and Light are separate designs. System follows Windows and updates when you change it.", segment));
+            p.Children.Add(Row("Theme", "Dark is true black. Light is a separate design. System follows Windows and updates when you change it.", segment));
+
+            // accent colour
+            var swatches = new WrapPanel { MaxWidth = 360 };
+
+            foreach (var (name, hex) in ThemeManager.AccentPresets)
+            {
+                string preset = name;
+                var swatch = new RadioButton { GroupName = "accent", ToolTip = name, IsChecked = App.Settings.Prop.AccentColor == name, Margin = new Thickness(0, 0, 8, 0) };
+                swatch.SetResourceReference(StyleProperty, "LxrFilterChip");
+                swatch.Content = name;
+                swatch.Checked += (_, _) =>
+                {
+                    App.Settings.Prop.AccentColor = preset;
+                    ThemeManager.ApplyAccent(preset);
+                    AutoSave.SettingsNow();
+                };
+                swatches.Children.Add(swatch);
+            }
+
+            p.Children.Add(Row("Accent colour", "Used for buttons, toggles and highlights. Default follows the theme (white on black).", swatches));
+
+            var custom = new TextBox { Width = 120, Text = ThemeManager.AccentPresets.ContainsKey(App.Settings.Prop.AccentColor) ? "" : App.Settings.Prop.AccentColor, ToolTip = "Hex colour, for example #FF4D8D" };
+            custom.LostFocus += (_, _) =>
+            {
+                string value = custom.Text.Trim();
+
+                if (value.Length == 0)
+                    return;
+
+                if (!ThemeManager.TryParseAccent(value, out _))
+                {
+                    custom.Text = "";
+                    return;
+                }
+
+                App.Settings.Prop.AccentColor = value;
+                ThemeManager.ApplyAccent(value);
+                AutoSave.SettingsNow();
+            };
+            p.Children.Add(Row("Custom accent", "Type any colour as #RRGGBB and leave the box to apply it.", custom));
+
+            // animation level
+            var motion = new StackPanel { Orientation = Orientation.Horizontal };
+
+            foreach (string level in new[] { "Full", "Reduced", "Off" })
+            {
+                string value = level;
+                var option = new RadioButton { Content = level, GroupName = "motion", IsChecked = App.Settings.Prop.AnimationLevel == level };
+                option.SetResourceReference(StyleProperty, "LxrSegment");
+                option.Checked += (_, _) =>
+                {
+                    App.Settings.Prop.AnimationLevel = value;
+                    AutoSave.SettingsNow();
+                    ThemeManager.NotifyAppearanceChanged();
+                };
+                motion.Children.Add(option);
+            }
+
+            p.Children.Add(Row("Animations", "Full: page transitions and the moving orb. Reduced: no page transitions. Off: also stops the orb.", motion));
+
+            // interface size
+            var size = new StackPanel { Orientation = Orientation.Horizontal };
+
+            foreach (int percent in new[] { 90, 100, 110, 125 })
+            {
+                int value = percent;
+                var option = new RadioButton { Content = $"{percent}%", GroupName = "scale", IsChecked = App.Settings.Prop.InterfaceScale == percent };
+                option.SetResourceReference(StyleProperty, "LxrSegment");
+                option.Checked += (_, _) =>
+                {
+                    App.Settings.Prop.InterfaceScale = value;
+                    AutoSave.SettingsNow();
+                    ThemeManager.NotifyAppearanceChanged();
+                };
+                size.Children.Add(option);
+            }
+
+            p.Children.Add(Row("Interface size", "Scales the whole LXRStrap window.", size));
             p.Children.Add(Note(NativeDwm.SupportsBackdrop
                 ? "Your Windows version supports the translucent Mica window backdrop, so it is used."
                 : "Your Windows version doesn't support the Mica backdrop, so windows use a solid gradient instead."));
@@ -203,6 +281,23 @@ namespace Bloxstrap.LXR.UI.Pages
             folders.Children.Add(data);
             p.Children.Add(Row("Folders", "Open LXRStrap's log and data folders in Explorer.", folders));
 
+            var backup = new StackPanel { Orientation = Orientation.Horizontal };
+            backup.Children.Add(ActionButton("Export…", ExportBackup));
+            var restore = ActionButton("Restore…", RestoreBackup);
+            restore.Margin = new Thickness(8, 0, 0, 0);
+            backup.Children.Add(restore);
+            p.Children.Add(Row("Backup", "Save your settings, FastFlags and profiles to one file, or restore them from one.", backup));
+
+            p.Children.Add(Row("Clear Roblox logs", "Deletes Roblox's own log files. They are rebuilt the next time Roblox runs.",
+                ActionButton("Clear logs", ClearRobloxLogs)));
+            p.Children.Add(Row("Reinstall Roblox next launch", "Forces a clean download of Roblox the next time you play. Your settings are kept.",
+                ActionButton("Schedule", () =>
+                {
+                    App.State.Prop.ForceReinstall = true;
+                    App.State.Save();
+                    Frontend.ShowMessageBox("Roblox will be reinstalled the next time you launch it.", MessageBoxImage.Information);
+                })));
+
             var danger = new TextBlock { Text = "Danger zone", Margin = new Thickness(0, 26, 0, 8) };
             danger.SetResourceReference(StyleProperty, "LxrHeading");
             p.Children.Add(danger);
@@ -210,6 +305,64 @@ namespace Bloxstrap.LXR.UI.Pages
                 ActionButton("Uninstall…", Uninstall, "LxrDangerButton")));
 
             return p;
+        }
+
+        private static void ExportBackup()
+        {
+            var dialog = new Microsoft.Win32.SaveFileDialog { FileName = $"LXRStrap-backup-{DateTime.Now:yyyy-MM-dd}.zip", Filter = "LXRStrap backup|*.zip" };
+
+            if (dialog.ShowDialog() != true)
+                return;
+
+            try
+            {
+                BackupService.Export(dialog.FileName);
+                Frontend.ShowMessageBox("Backup saved.", MessageBoxImage.Information);
+            }
+            catch (Exception ex)
+            {
+                App.Logger.WriteException("SettingsPage::ExportBackup", ex);
+                Frontend.ShowMessageBox("Couldn't save the backup: " + ex.Message, MessageBoxImage.Error);
+            }
+        }
+
+        private static void RestoreBackup()
+        {
+            var dialog = new Microsoft.Win32.OpenFileDialog { Filter = "LXRStrap backup|*.zip" };
+
+            if (dialog.ShowDialog() != true)
+                return;
+
+            try
+            {
+                string error = BackupService.Import(dialog.FileName);
+
+                Frontend.ShowMessageBox(error.Length == 0
+                    ? "Restored. Previous files were kept next to the originals with a .before-restore ending. Reopen LXRStrap to see everything refreshed."
+                    : error, error.Length == 0 ? MessageBoxImage.Information : MessageBoxImage.Warning);
+            }
+            catch (Exception ex)
+            {
+                App.Logger.WriteException("SettingsPage::RestoreBackup", ex);
+                Frontend.ShowMessageBox("Couldn't restore the backup: " + ex.Message, MessageBoxImage.Error);
+            }
+        }
+
+        private static void ClearRobloxLogs()
+        {
+            string dir = Path.Combine(Paths.LocalAppData, "Roblox", "logs");
+            int removed = 0;
+
+            if (Directory.Exists(dir))
+            {
+                foreach (string file in Directory.GetFiles(dir))
+                {
+                    try { File.Delete(file); removed++; }
+                    catch { /* in use by a running Roblox; leave it */ }
+                }
+            }
+
+            Frontend.ShowMessageBox($"Removed {removed} log file(s).", MessageBoxImage.Information);
         }
 
         private static void OpenFolder(string path)

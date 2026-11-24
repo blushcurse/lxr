@@ -42,6 +42,10 @@
         <GradientStop Color="#30506AA0" Offset="0.5" />
         <GradientStop Color="#99FFFFFF" Offset="1" />
     </LinearGradientBrush>
+    <LinearGradientBrush x:Key="LxrRimBrush" StartPoint="0,0" EndPoint="1,1">
+        <GradientStop Color="#66000000" Offset="0" />
+        <GradientStop Color="#1A000000" Offset="1" />
+    </LinearGradientBrush>
     <SolidColorBrush x:Key="LxrBorderSoftBrush" Color="#22324678" />
     <LinearGradientBrush x:Key="LxrTopHighlightBrush" StartPoint="0,0" EndPoint="1,0">
         <GradientStop Color="#00FFFFFF" Offset="0" />
