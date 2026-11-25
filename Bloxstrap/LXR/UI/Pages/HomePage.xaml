@@ -3,63 +3,98 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:ui="clr-namespace:Bloxstrap.LXR.UI">
     <ScrollViewer VerticalScrollBarVisibility="Auto">
-        <StackPanel Margin="40,20,40,32" MaxWidth="820" HorizontalAlignment="Stretch">
-            <TextBlock Text="Ready when you are" Style="{StaticResource LxrTitle}" FontSize="30" />
-            <TextBlock x:Name="SubText" Style="{StaticResource LxrDim}" Margin="0,6,0,0" />
+        <Grid Margin="44,18,44,32" MaxWidth="1040">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="1.5*" />
+                <ColumnDefinition Width="16" />
+                <ColumnDefinition Width="*" MinWidth="280" />
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
 
-            <ContentControl Style="{StaticResource LxrCard}" Margin="0,26,0,0">
-                <Grid Margin="30">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="Auto" />
-                        <ColumnDefinition Width="*" />
-                        <ColumnDefinition Width="Auto" />
-                    </Grid.ColumnDefinitions>
-                    <ui:LiquidOrb Width="72" Height="90" Margin="0,0,26,0" />
-                    <StackPanel Grid.Column="1" VerticalAlignment="Center">
-                        <TextBlock Text="Launch Roblox" Style="{StaticResource LxrHeading}" FontSize="20" />
-                        <TextBlock x:Name="LaunchHint" Style="{StaticResource LxrDim}" TextWrapping="Wrap" Margin="0,6,24,0"
-                                   Text="Checks for an update, applies your FastFlags, cursors and mods, then starts the game." />
+            <!-- hero -->
+            <ContentControl Style="{StaticResource LxrCard}" Grid.RowSpan="2">
+                <Grid Margin="36,32">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="*" />
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
+
+                    <StackPanel>
+                        <TextBlock x:Name="SubText" Style="{StaticResource LxrFaint}" />
+                        <TextBlock Text="Ready when you are" Style="{StaticResource LxrTitle}" FontSize="34" Margin="0,6,0,0" />
                     </StackPanel>
-                    <Button Grid.Column="2" Content="Play" Style="{StaticResource LxrHeroButton}" Click="Play_Click" MinWidth="150" />
+
+                    <ui:LiquidOrb Grid.Row="1" Width="190" Height="238" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,18" />
+
+                    <StackPanel Grid.Row="2">
+                        <TextBlock x:Name="LaunchHint" Style="{StaticResource LxrDim}" TextWrapping="Wrap" HorizontalAlignment="Center" TextAlignment="Center"
+                                   Text="Checks for an update, applies your FastFlags, cursors and mods, then starts the game." />
+                        <Border x:Name="RunningNote" Style="{StaticResource LxrChip}" Margin="0,12,0,0" HorizontalAlignment="Center"
+                                Background="{DynamicResource LxrWarnSoftBrush}" Visibility="Collapsed">
+                            <TextBlock Foreground="{DynamicResource LxrWarnBrush}" FontSize="12" TextWrapping="Wrap" TextAlignment="Center"
+                                       Text="Roblox is running. Changes apply the next time it starts." />
+                        </Border>
+                        <Button Content="Play" Style="{StaticResource LxrHeroButton}" Click="Play_Click" HorizontalAlignment="Stretch" Margin="0,18,0,0" />
+                        <Button Content="Open Roblox Studio" Margin="0,10,0,0" HorizontalAlignment="Center" Style="{StaticResource LxrGhostButton}" Click="Studio_Click" />
+                    </StackPanel>
                 </Grid>
             </ContentControl>
 
-            <Border x:Name="RunningNote" Style="{StaticResource LxrChip}" Margin="0,14,0,0" HorizontalAlignment="Left"
-                    Background="{DynamicResource LxrWarnSoftBrush}" Visibility="Collapsed">
-                <TextBlock Foreground="{DynamicResource LxrWarnBrush}" FontSize="12" TextWrapping="Wrap"
-                           Text="Roblox is running. FastFlag, cursor and mod changes apply the next time it starts." />
-            </Border>
-
-            <Button x:Name="UpdateBanner" Style="{StaticResource LxrCardButton}" Margin="0,14,0,0" Padding="18,12" Tag="updates"
-                    Click="Tile_Click" Visibility="Collapsed">
-                <TextBlock x:Name="UpdateBannerText" Style="{StaticResource LxrBody}" />
-            </Button>
-
-            <UniformGrid Columns="3" Margin="0,18,0,0">
-                <Button Style="{StaticResource LxrCardButton}" Margin="0,0,7,0" Click="Tile_Click" Tag="flags">
-                    <StackPanel>
-                        <TextBlock Text="&#xE7C1;" Style="{StaticResource LxrIcon}" FontSize="20" Foreground="{DynamicResource LxrAccentSolidBrush}" HorizontalAlignment="Left" />
-                        <TextBlock Text="FastFlags" Style="{StaticResource LxrHeading}" Margin="0,14,0,0" />
-                        <TextBlock x:Name="FlagsTileText" Style="{StaticResource LxrDim}" Margin="0,4,0,0" TextWrapping="Wrap" />
-                    </StackPanel>
+            <!-- side stack -->
+            <StackPanel Grid.Column="2">
+                <Button x:Name="UpdateBanner" Style="{StaticResource LxrCardButton}" Margin="0,0,0,12" Padding="18,14" Tag="updates"
+                        Click="Tile_Click" Visibility="Collapsed">
+                    <TextBlock x:Name="UpdateBannerText" Style="{StaticResource LxrBody}" TextWrapping="Wrap" />
                 </Button>
-                <Button Style="{StaticResource LxrCardButton}" Margin="7,0" Click="Tile_Click" Tag="customization">
-                    <StackPanel>
-                        <TextBlock Text="&#xE790;" Style="{StaticResource LxrIcon}" FontSize="20" Foreground="{DynamicResource LxrAccentSolidBrush}" HorizontalAlignment="Left" />
-                        <TextBlock Text="Customization" Style="{StaticResource LxrHeading}" Margin="0,14,0,0" />
-                        <TextBlock x:Name="CustomTileText" Style="{StaticResource LxrDim}" Margin="0,4,0,0" TextWrapping="Wrap" />
-                    </StackPanel>
-                </Button>
-                <Button Style="{StaticResource LxrCardButton}" Margin="7,0,0,0" Click="Tile_Click" Tag="settings">
-                    <StackPanel>
-                        <TextBlock Text="&#xE713;" Style="{StaticResource LxrIcon}" FontSize="20" Foreground="{DynamicResource LxrAccentSolidBrush}" HorizontalAlignment="Left" />
-                        <TextBlock Text="Settings" Style="{StaticResource LxrHeading}" Margin="0,14,0,0" />
-                        <TextBlock Text="Theme, performance, privacy and updates." Style="{StaticResource LxrDim}" Margin="0,4,0,0" TextWrapping="Wrap" />
-                    </StackPanel>
-                </Button>
-            </UniformGrid>
 
-            <Button Content="Open Roblox Studio" Margin="0,22,0,0" HorizontalAlignment="Left" Style="{StaticResource LxrGhostButton}" Click="Studio_Click" />
-        </StackPanel>
+                <Button Style="{StaticResource LxrCardButton}" Margin="0,0,0,12" Click="Tile_Click" Tag="flags">
+                    <Grid>
+                        <Grid.ColumnDefinitions><ColumnDefinition Width="Auto" /><ColumnDefinition Width="*" /></Grid.ColumnDefinitions>
+                        <TextBlock Text="&#xE7C1;" Style="{StaticResource LxrIcon}" FontSize="22" Foreground="{DynamicResource LxrAccentSolidBrush}" VerticalAlignment="Top" Margin="0,2,16,0" />
+                        <StackPanel Grid.Column="1">
+                            <TextBlock Text="FastFlags" Style="{StaticResource LxrHeading}" />
+                            <TextBlock x:Name="FlagsTileText" Style="{StaticResource LxrDim}" Margin="0,4,0,0" TextWrapping="Wrap" />
+                        </StackPanel>
+                    </Grid>
+                </Button>
+
+                <Button Style="{StaticResource LxrCardButton}" Margin="0,0,0,12" Click="Tile_Click" Tag="customization">
+                    <Grid>
+                        <Grid.ColumnDefinitions><ColumnDefinition Width="Auto" /><ColumnDefinition Width="*" /></Grid.ColumnDefinitions>
+                        <TextBlock Text="&#xE790;" Style="{StaticResource LxrIcon}" FontSize="22" Foreground="{DynamicResource LxrAccentSolidBrush}" VerticalAlignment="Top" Margin="0,2,16,0" />
+                        <StackPanel Grid.Column="1">
+                            <TextBlock Text="Customize" Style="{StaticResource LxrHeading}" />
+                            <TextBlock x:Name="CustomTileText" Style="{StaticResource LxrDim}" Margin="0,4,0,0" TextWrapping="Wrap" />
+                        </StackPanel>
+                    </Grid>
+                </Button>
+
+                <Button Style="{StaticResource LxrCardButton}" Margin="0,0,0,12" Click="Tile_Click" Tag="updates">
+                    <Grid>
+                        <Grid.ColumnDefinitions><ColumnDefinition Width="Auto" /><ColumnDefinition Width="*" /></Grid.ColumnDefinitions>
+                        <TextBlock Text="&#xE895;" Style="{StaticResource LxrIcon}" FontSize="22" Foreground="{DynamicResource LxrAccentSolidBrush}" VerticalAlignment="Top" Margin="0,2,16,0" />
+                        <StackPanel Grid.Column="1">
+                            <TextBlock Text="Roblox updates" Style="{StaticResource LxrHeading}" />
+                            <TextBlock x:Name="UpdatesTileText" Style="{StaticResource LxrDim}" Margin="0,4,0,0" TextWrapping="Wrap" />
+                        </StackPanel>
+                    </Grid>
+                </Button>
+
+                <Button Style="{StaticResource LxrCardButton}" Click="Tile_Click" Tag="settings">
+                    <Grid>
+                        <Grid.ColumnDefinitions><ColumnDefinition Width="Auto" /><ColumnDefinition Width="*" /></Grid.ColumnDefinitions>
+                        <TextBlock Text="&#xE713;" Style="{StaticResource LxrIcon}" FontSize="22" Foreground="{DynamicResource LxrAccentSolidBrush}" VerticalAlignment="Top" Margin="0,2,16,0" />
+                        <StackPanel Grid.Column="1">
+                            <TextBlock Text="Settings" Style="{StaticResource LxrHeading}" />
+                            <TextBlock Text="Theme, accent, performance and privacy." Style="{StaticResource LxrDim}" Margin="0,4,0,0" TextWrapping="Wrap" />
+                        </StackPanel>
+                    </Grid>
+                </Button>
+            </StackPanel>
+        </Grid>
     </ScrollViewer>
 </UserControl>

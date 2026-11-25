@@ -11,6 +11,7 @@ namespace Bloxstrap.Models.Persistable
         public Theme Theme { get; set; } = Theme.Default;
         [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
         // LXRStrap appearance
+        public bool RobloxHighPriority { get; set; } = false;
         public string AccentColor { get; set; } = "Default";
         public string AnimationLevel { get; set; } = "Full";
         public int InterfaceScale { get; set; } = 100;

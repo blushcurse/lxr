@@ -25,6 +25,13 @@ Roblox protocol handlers (`roblox://`) are registered by whichever launcher inst
 - Backup and restore of settings, FastFlags and profiles; clear Roblox logs; schedule a clean Roblox reinstall.
 - Not built: Robux purchase confirmation. Purchases happen inside Roblox; confirming them would mean intercepting or modifying the Roblox client, which LXRStrap does not do.
 
+## Stage 4: new layout and motion
+- Sidebar replaced by a floating glass dock at the top with a highlight that glides between pages.
+- Home is now a bento layout: large hero with the orb and Play, plus a stack of quick tiles. The launch window is a centred vertical layout.
+- Pages animate in with a staggered rise; windows fade in; hover glow and lift on cards; Animations setting still controls all of it.
+- Orb animation pauses when its window is inactive, hidden, minimized, or Roblox is running (checked on focus/visibility changes, never on a timer).
+- Optional "Higher Roblox priority" setting (off by default). It sets a normal Windows priority; LXRStrap does not claim FPS gains from it.
+
 ## Known limits
 - Not compiled or run by the author yet (no Windows/.NET SDK available). First CI build is the first test.
 - New UI is English only. Other locale files still contain old strings for removed screens.

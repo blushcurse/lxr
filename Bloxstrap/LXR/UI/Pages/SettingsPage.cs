@@ -228,6 +228,8 @@ namespace Bloxstrap.LXR.UI.Pages
 
             p.Children.Add(Row("Software rendering for LXRStrap windows", "Draws LXRStrap's own windows on the CPU. Try it only if they flicker or look wrong on your GPU. Applies to windows opened afterwards.",
                 Toggle(() => s.WPFSoftwareRender, v => s.WPFSoftwareRender = v)));
+            p.Children.Add(Row("Higher Roblox priority", "Starts Roblox with High process priority, the same setting Task Manager offers. Can help on busy PCs; off by default. Not a FPS guarantee.",
+                Toggle(() => s.RobloxHighPriority, v => s.RobloxHighPriority = v)));
             p.Children.Add(Row("Track game activity", "Keeps a small background watcher running while Roblox is open. It is needed for Discord status and server info. Turn it off and LXRStrap exits right after launching Roblox.",
                 Toggle(() => s.EnableActivityTracking, v => s.EnableActivityTracking = v)));
             p.Children.Add(Note("LXRStrap does nothing in the background while Roblox is not running, and nothing polls while its window sits idle."));

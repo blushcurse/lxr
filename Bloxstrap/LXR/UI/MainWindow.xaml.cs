@@ -19,6 +19,17 @@ namespace Bloxstrap.LXR.UI
 
             Show(nameof(NavHome));
 
+            // place the indicator once layout is known, and keep it right if the window is resized or rescaled
+            DockHost.SizeChanged += (_, _) => { if (Checked() is { } rb) MoveIndicator(rb, false); };
+            Loaded += (_, _) =>
+            {
+                if (Checked() is { } rb)
+                    MoveIndicator(rb, false);
+
+                if (Motion.PageTransitions)
+                    Motion.OpenWindow(this);
+            };
+
             // The indicator only changes when something is actually written; nothing polls.
             ApplyScale();
             ThemeManager.AppearanceChanged += OnAppearanceChanged;
@@ -51,9 +62,40 @@ namespace Bloxstrap.LXR.UI
 
         private void Nav_Checked(object sender, RoutedEventArgs e)
         {
-            if (sender is RadioButton rb && IsLoaded)
-                Show(rb.Name);
+            if (sender is not RadioButton rb || !IsLoaded)
+                return;
+
+            MoveIndicator(rb, true);
+            Show(rb.Name);
         }
+
+        // the glass highlight glides to the selected item instead of jumping
+        private void MoveIndicator(RadioButton target, bool animate)
+        {
+            if (!target.IsLoaded || target.ActualWidth <= 0)
+                return;
+
+            double x = target.TranslatePoint(new Point(0, 0), DockHost).X;
+            double width = target.ActualWidth;
+            DockIndicator.Height = target.ActualHeight;
+
+            if (!animate || !Motion.Ambient)
+            {
+                DockShift.BeginAnimation(System.Windows.Media.TranslateTransform.XProperty, null);
+                DockIndicator.BeginAnimation(WidthProperty, null);
+                DockShift.X = x;
+                DockIndicator.Width = width;
+                return;
+            }
+
+            var ease = new System.Windows.Media.Animation.CubicEase { EasingMode = System.Windows.Media.Animation.EasingMode.EaseOut };
+            var time = TimeSpan.FromMilliseconds(320);
+            DockShift.BeginAnimation(System.Windows.Media.TranslateTransform.XProperty, new System.Windows.Media.Animation.DoubleAnimation(x, time) { EasingFunction = ease });
+            DockIndicator.BeginAnimation(WidthProperty, new System.Windows.Media.Animation.DoubleAnimation(width, time) { EasingFunction = ease });
+        }
+
+        private RadioButton? Checked() =>
+            new[] { NavHome, NavFlags, NavCustom, NavUpdates, NavSettings, NavAbout }.FirstOrDefault(x => x.IsChecked == true);
 
         public void Navigate(string target)
         {

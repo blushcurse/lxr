@@ -32,6 +32,11 @@ namespace Bloxstrap.LXR.UI.Pages
             UpdateBanner.Visibility = unread > 0 ? Visibility.Visible : Visibility.Collapsed;
             UpdateBannerText.Text = unread == 1 ? "Roblox was updated since you last looked. See the details." : $"Roblox was updated {unread} times since you last looked. See the details.";
 
+            var latest = Services.RobloxUpdateLog.GetEntries().FirstOrDefault();
+            UpdatesTileText.Text = latest is null
+                ? "No updates recorded yet."
+                : $"Last: {latest.Product} {latest.Kind.ToLowerInvariant()} on {latest.When.LocalDateTime:d}.";
+
             RunningNote.Visibility = Mutex.TryOpenExisting("ROBLOX_singletonMutex", out var m)
                 ? Visibility.Visible : Visibility.Collapsed;
             m?.Dispose();

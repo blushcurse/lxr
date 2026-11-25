@@ -604,6 +604,13 @@ namespace Bloxstrap
             {
                 using var process = Process.Start(startInfo)!;
                 _appPid = process.Id;
+
+                // optional, off by default: a normal Windows priority change, the same one Task Manager offers
+                if (App.Settings.Prop.RobloxHighPriority)
+                {
+                    try { process.PriorityClass = ProcessPriorityClass.High; }
+                    catch (Exception ex) { App.Logger.WriteLine(LOG_IDENT, $"Could not set priority: {ex.Message}"); }
+                }
             }
             catch (Win32Exception ex) when (ex.NativeErrorCode == 1223)
             {

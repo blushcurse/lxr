@@ -78,7 +78,7 @@ namespace Bloxstrap.LXR.UI
             if (_story is null)
                 return;
 
-            bool shouldRun = Animated && Motion.Ambient && IsLoaded && IsVisible
+            bool shouldRun = Animated && Motion.Ambient && IsLoaded && IsVisible && !RobloxRunning()
                 && _window is { IsActive: true, WindowState: not System.Windows.WindowState.Minimized };
 
             if (shouldRun && !_running)
@@ -90,6 +90,18 @@ namespace Bloxstrap.LXR.UI
             {
                 Stop();
             }
+        }
+
+        // checked only when something changes (window focus, visibility), never on a timer
+        private static bool RobloxRunning()
+        {
+            if (Mutex.TryOpenExisting("ROBLOX_singletonMutex", out var mutex))
+            {
+                mutex.Dispose();
+                return true;
+            }
+
+            return false;
         }
 
         private void Stop()
