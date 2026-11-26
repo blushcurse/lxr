@@ -53,8 +53,8 @@ namespace Bloxstrap.LXR.Customization
         {
             new CursorSlot { FileName = "ArrowCursor.png", Label = "Arrow", Hint = "The normal pointer." },
             new CursorSlot { FileName = "ArrowFarCursor.png", Label = "Arrow (far)", Hint = "Pointer variant Roblox uses at a distance. Usually the same image as Arrow." },
-            new CursorSlot { FileName = "IBeamCursor.png", Label = "Text (I-beam)", Hint = "Pointer over text boxes. Documented by community tools, not used by Bloxstrap's presets." },
-            new CursorSlot { FileName = "MouseLockedCursor.png", Label = "Shift lock", Hint = "Pointer while the mouse is locked. Documented by community tools, not used by Bloxstrap's presets." },
+            new CursorSlot { FileName = "IBeamCursor.png", Label = "Text (I-beam)", Hint = "Pointer over text boxes. Community-documented slot. If Roblox doesn't read it, the original stays." },
+            new CursorSlot { FileName = "MouseLockedCursor.png", Label = "Shift lock", Hint = "Pointer while the mouse is locked. Community-documented slot; if Roblox doesn't read it, the original stays." },
         };
 
         private static string Root => Path.Combine(Paths.Lxr, "Cursors");
@@ -65,18 +65,30 @@ namespace Bloxstrap.LXR.Customization
 
         #region Library
         /// <summary>Makes the two cursor sets that shipped with Bloxstrap available as built-in packs.</summary>
+        private static readonly string[] ArrowSlots = { "ArrowCursor.png", "ArrowFarCursor.png" };
+        private static readonly string[] AllSlots = { "ArrowCursor.png", "ArrowFarCursor.png", "IBeamCursor.png", "MouseLockedCursor.png" };
+
         public static void EnsureBuiltIns()
         {
-            foreach (string era in new[] { "From2006", "From2013" })
+            var builtIns = new (string Name, string Key, string[] Files)[]
             {
-                string folder = Path.Combine(Library, "Classic " + era.Substring(4));
+                ("LXR Glass", "LxrGlass", AllSlots),
+                ("LXR Red", "LxrRed", AllSlots),
+                ("LXR Mono", "LxrMono", AllSlots),
+                ("Classic 2006", "From2006", ArrowSlots),
+                ("Classic 2013", "From2013", ArrowSlots),
+            };
+
+            foreach (var (name, era, files) in builtIns)
+            {
+                string folder = Path.Combine(Library, name);
 
                 if (Directory.Exists(folder))
                     continue;
 
                 Directory.CreateDirectory(folder);
 
-                foreach (string file in new[] { "ArrowCursor.png", "ArrowFarCursor.png" })
+                foreach (string file in files)
                 {
                     using var source = Resource.GetStream($"Cursor.{era}.{file}");
                     using var target = File.Create(Path.Combine(folder, file));

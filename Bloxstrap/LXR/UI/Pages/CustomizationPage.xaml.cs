@@ -515,6 +515,20 @@ namespace Bloxstrap.LXR.UI.Pages
             LoadMods();
         }
 
+        private void OpenTextures_Click(object sender, RoutedEventArgs e)
+        {
+            string guid = App.PlayerState.Prop.VersionGuid;
+            string path = Path.Combine(Paths.Versions, guid, "content", "textures");
+
+            if (string.IsNullOrEmpty(guid) || !Directory.Exists(path))
+            {
+                Frontend.ShowMessageBox("Roblox isn't installed yet. Launch it once from LXRStrap, then try again.", MessageBoxImage.Information);
+                return;
+            }
+
+            Process.Start("explorer.exe", path);
+        }
+
         private void OpenMods_Click(object sender, RoutedEventArgs e)
         {
             Directory.CreateDirectory(Paths.Modifications);

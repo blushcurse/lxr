@@ -15,39 +15,51 @@ namespace Bloxstrap.LXR.UI
         /// <summary>"Off" also stops the ambient orb animation.</summary>
         public static bool Ambient => App.Settings.Prop.AnimationLevel != "Off";
 
-        /// <summary>Fade + small upward slide. Cleans up after itself so no transform stays on the element.</summary>
+        /// <summary>
+        /// Page entrance. Blocks of the page rise in one after another; a page with no such blocks gets a plain fade.
+        /// Only opacity and a translate are animated, and the moving blocks are rendered from a GPU bitmap while they
+        /// move, so a transition doesn't re-lay-out or re-draw text every frame.
+        /// </summary>
         public static void EnterPage(FrameworkElement element)
         {
             if (!PageTransitions)
                 return;
 
-            var slide = new TranslateTransform(0, 14);
-            element.RenderTransform = slide;
+            if (!Stagger(element))
+                Fade(element);
+        }
 
+        private static void Fade(FrameworkElement element)
+        {
             var fade = new DoubleAnimation(0, 1, TimeSpan.FromMilliseconds(220)) { EasingFunction = EaseOut };
             fade.Completed += (_, _) =>
             {
                 element.BeginAnimation(UIElement.OpacityProperty, null);
                 element.Opacity = 1;
-                element.RenderTransform = null;
             };
 
             element.BeginAnimation(UIElement.OpacityProperty, fade);
-            slide.BeginAnimation(TranslateTransform.YProperty, new DoubleAnimation(14, 0, TimeSpan.FromMilliseconds(260)) { EasingFunction = EaseOut });
+        }
 
-            element.Dispatcher.BeginInvoke(new Action(() => Stagger(element)), System.Windows.Threading.DispatcherPriority.Loaded);
+        private static BitmapCache NewCache(Visual visual)
+        {
+            double scale = 1.0;
+
+            try { scale = VisualTreeHelper.GetDpi(visual).DpiScaleX; } catch { }
+
+            return new BitmapCache(scale);
         }
 
         /// <summary>Children of the page's first multi-item panel rise in one after another.</summary>
-        public static void Stagger(FrameworkElement page)
+        public static bool Stagger(FrameworkElement page)
         {
             if (!PageTransitions)
-                return;
+                return false;
 
             var panel = FindPanel(page, 0);
 
             if (panel is null)
-                return;
+                return false;
 
             int index = 0;
 
@@ -59,6 +71,7 @@ namespace Bloxstrap.LXR.UI
                 var slide = new TranslateTransform(0, 18);
                 child.RenderTransform = slide;
                 child.Opacity = 0;
+                child.CacheMode = NewCache(child);
 
                 var delay = TimeSpan.FromMilliseconds(40 * index++);
                 var fade = new DoubleAnimation(0, 1, TimeSpan.FromMilliseconds(360)) { BeginTime = delay, EasingFunction = EaseOut };
@@ -74,11 +87,14 @@ namespace Bloxstrap.LXR.UI
                 {
                     slide.BeginAnimation(TranslateTransform.YProperty, null);
                     captured.RenderTransform = Transform.Identity;
+                    captured.CacheMode = null; // back to crisp live rendering once it has settled
                 };
 
                 child.BeginAnimation(UIElement.OpacityProperty, fade);
                 slide.BeginAnimation(TranslateTransform.YProperty, rise);
             }
+
+            return index > 0;
         }
 
         private static System.Windows.Controls.Panel? FindPanel(DependencyObject root, int depth)
@@ -101,8 +117,17 @@ namespace Bloxstrap.LXR.UI
         /// <summary>A soft scale-and-fade when a window first appears.</summary>
         public static void OpenWindow(Window window)
         {
-            window.Opacity = 0;
-            window.BeginAnimation(UIElement.OpacityProperty, new DoubleAnimation(0, 1, TimeSpan.FromMilliseconds(260)) { EasingFunction = EaseOut });
+            if (window.Content is not UIElement root)
+                return;
+
+            root.Opacity = 0;
+            var fade = new DoubleAnimation(0, 1, TimeSpan.FromMilliseconds(260)) { EasingFunction = EaseOut };
+            fade.Completed += (_, _) =>
+            {
+                root.BeginAnimation(UIElement.OpacityProperty, null);
+                root.Opacity = 1;
+            };
+            root.BeginAnimation(UIElement.OpacityProperty, fade);
         }
 
         public static void Pulse(FrameworkElement element)

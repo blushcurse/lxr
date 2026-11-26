@@ -50,6 +50,7 @@
 
     <!-- ============ Glass card ============ -->
     <Style x:Key="LxrCard" TargetType="ContentControl">
+        <Setter Property="lxr:Spotlight.Enabled" Value="True" />
         <Setter Property="Padding" Value="18" />
         <Setter Property="Margin" Value="0,0,0,12" />
         <Setter Property="Focusable" Value="False" />
@@ -62,10 +63,40 @@
                                 Background="{DynamicResource LxrSurfaceBrush}"
                                 BorderBrush="{DynamicResource LxrBorderBrush}"
                                 BorderThickness="1" />
+                        <Border x:Name="Spot" CornerRadius="{StaticResource LxrRadiusLg}" IsHitTestVisible="False" Opacity="0">
+                            <Border.Background>
+                                <RadialGradientBrush MappingMode="Absolute" RadiusX="260" RadiusY="260">
+                                    <GradientStop Color="{DynamicResource LxrSpotColor}" Offset="0" />
+                                    <GradientStop Color="#00FFFFFF" Offset="1" />
+                                </RadialGradientBrush>
+                            </Border.Background>
+                        </Border>
+                        <Border x:Name="Rim" CornerRadius="{StaticResource LxrRadiusLg}" BorderBrush="{DynamicResource LxrRimBrush}"
+                                BorderThickness="1" Opacity="0" IsHitTestVisible="False" />
                         <Border Height="1" VerticalAlignment="Top" Margin="18,1,18,0"
                                 Background="{DynamicResource LxrTopHighlightBrush}" IsHitTestVisible="False" />
                         <ContentPresenter Margin="{TemplateBinding Padding}" />
                     </Grid>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Trigger.EnterActions>
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <DoubleAnimation Storyboard.TargetName="Spot" Storyboard.TargetProperty="Opacity" To="1" Duration="0:0:0.25"><DoubleAnimation.EasingFunction><CubicEase EasingMode="EaseOut" /></DoubleAnimation.EasingFunction></DoubleAnimation>
+                                        <DoubleAnimation Storyboard.TargetName="Rim" Storyboard.TargetProperty="Opacity" To="0.55" Duration="0:0:0.25"><DoubleAnimation.EasingFunction><CubicEase EasingMode="EaseOut" /></DoubleAnimation.EasingFunction></DoubleAnimation>
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </Trigger.EnterActions>
+                            <Trigger.ExitActions>
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <DoubleAnimation Storyboard.TargetName="Spot" Storyboard.TargetProperty="Opacity" To="0" Duration="0:0:0.35"><DoubleAnimation.EasingFunction><CubicEase EasingMode="EaseOut" /></DoubleAnimation.EasingFunction></DoubleAnimation>
+                                        <DoubleAnimation Storyboard.TargetName="Rim" Storyboard.TargetProperty="Opacity" To="0" Duration="0:0:0.35"><DoubleAnimation.EasingFunction><CubicEase EasingMode="EaseOut" /></DoubleAnimation.EasingFunction></DoubleAnimation>
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </Trigger.ExitActions>
+                        </Trigger>
+                    </ControlTemplate.Triggers>
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
@@ -81,6 +112,7 @@
 
     <!-- ============ Buttons ============ -->
     <Style x:Key="LxrButtonBase" TargetType="Button">
+        <Setter Property="lxr:Spotlight.Enabled" Value="True" />
         <Setter Property="Foreground" Value="{DynamicResource LxrTextBrush}" />
         <Setter Property="Background" Value="{DynamicResource LxrSurfaceBrush}" />
         <Setter Property="BorderBrush" Value="{DynamicResource LxrBorderBrush}" />
@@ -105,6 +137,14 @@
                                 BorderThickness="{TemplateBinding BorderThickness}" />
                         <Border x:Name="Hover" CornerRadius="{StaticResource LxrRadiusMd}"
                                 Background="{DynamicResource LxrHoverOverlayBrush}" Opacity="0" IsHitTestVisible="False" />
+                        <Border x:Name="Spot" CornerRadius="{StaticResource LxrRadiusMd}" IsHitTestVisible="False" Opacity="0">
+                            <Border.Background>
+                                <RadialGradientBrush MappingMode="Absolute" RadiusX="120" RadiusY="120">
+                                    <GradientStop Color="{DynamicResource LxrSpotColor}" Offset="0" />
+                                    <GradientStop Color="#00FFFFFF" Offset="1" />
+                                </RadialGradientBrush>
+                            </Border.Background>
+                        </Border>
                         <Border x:Name="Rim" CornerRadius="{StaticResource LxrRadiusMd}"
                                 BorderBrush="{DynamicResource LxrRimBrush}" BorderThickness="1" Opacity="0" IsHitTestVisible="False" />
                         <Border x:Name="Press" CornerRadius="{StaticResource LxrRadiusMd}"
@@ -123,6 +163,7 @@
                                     <Storyboard>
                                         <DoubleAnimation Storyboard.TargetName="Hover" Storyboard.TargetProperty="Opacity" To="1" Duration="0:0:0.12" />
                                         <DoubleAnimation Storyboard.TargetName="Rim" Storyboard.TargetProperty="Opacity" To="1" Duration="0:0:0.18"><DoubleAnimation.EasingFunction><CubicEase EasingMode="EaseOut" /></DoubleAnimation.EasingFunction></DoubleAnimation>
+                                        <DoubleAnimation Storyboard.TargetName="Spot" Storyboard.TargetProperty="Opacity" To="1" Duration="0:0:0.18"><DoubleAnimation.EasingFunction><CubicEase EasingMode="EaseOut" /></DoubleAnimation.EasingFunction></DoubleAnimation>
                                     </Storyboard>
                                 </BeginStoryboard>
                             </Trigger.EnterActions>
@@ -131,6 +172,7 @@
                                     <Storyboard>
                                         <DoubleAnimation Storyboard.TargetName="Hover" Storyboard.TargetProperty="Opacity" To="0" Duration="0:0:0.16" />
                                         <DoubleAnimation Storyboard.TargetName="Rim" Storyboard.TargetProperty="Opacity" To="0" Duration="0:0:0.22"><DoubleAnimation.EasingFunction><CubicEase EasingMode="EaseOut" /></DoubleAnimation.EasingFunction></DoubleAnimation>
+                                        <DoubleAnimation Storyboard.TargetName="Spot" Storyboard.TargetProperty="Opacity" To="0" Duration="0:0:0.22"><DoubleAnimation.EasingFunction><CubicEase EasingMode="EaseOut" /></DoubleAnimation.EasingFunction></DoubleAnimation>
                                     </Storyboard>
                                 </BeginStoryboard>
                             </Trigger.ExitActions>
@@ -745,6 +787,7 @@
 
     <!-- ============ Clickable glass card ============ -->
     <Style x:Key="LxrCardButton" TargetType="Button" BasedOn="{StaticResource LxrButtonBase}">
+        <Setter Property="lxr:Spotlight.Enabled" Value="True" />
         <Setter Property="Padding" Value="18" />
         <Setter Property="HorizontalContentAlignment" Value="Stretch" />
         <Setter Property="VerticalContentAlignment" Value="Top" />
@@ -758,6 +801,14 @@
                                 BorderBrush="{DynamicResource LxrBorderBrush}" BorderThickness="1" />
                         <Border x:Name="Hover" CornerRadius="{StaticResource LxrRadiusLg}" Background="{DynamicResource LxrHoverOverlayBrush}"
                                 Opacity="0" IsHitTestVisible="False" />
+                        <Border x:Name="Spot" CornerRadius="{StaticResource LxrRadiusLg}" IsHitTestVisible="False" Opacity="0">
+                            <Border.Background>
+                                <RadialGradientBrush MappingMode="Absolute" RadiusX="200" RadiusY="200">
+                                    <GradientStop Color="{DynamicResource LxrSpotColor}" Offset="0" />
+                                    <GradientStop Color="#00FFFFFF" Offset="1" />
+                                </RadialGradientBrush>
+                            </Border.Background>
+                        </Border>
                         <Border x:Name="Rim" CornerRadius="{StaticResource LxrRadiusLg}" BorderBrush="{DynamicResource LxrRimBrush}"
                                 BorderThickness="1" Opacity="0" IsHitTestVisible="False" />
                         <Border Height="1" VerticalAlignment="Top" Margin="18,1,18,0" Background="{DynamicResource LxrTopHighlightBrush}" IsHitTestVisible="False" />
@@ -773,6 +824,7 @@
                                     <Storyboard>
                                         <DoubleAnimation Storyboard.TargetName="Hover" Storyboard.TargetProperty="Opacity" To="1" Duration="0:0:0.14" />
                                         <DoubleAnimation Storyboard.TargetName="Rim" Storyboard.TargetProperty="Opacity" To="1" Duration="0:0:0.2"><DoubleAnimation.EasingFunction><CubicEase EasingMode="EaseOut" /></DoubleAnimation.EasingFunction></DoubleAnimation>
+                                        <DoubleAnimation Storyboard.TargetName="Spot" Storyboard.TargetProperty="Opacity" To="1" Duration="0:0:0.2"><DoubleAnimation.EasingFunction><CubicEase EasingMode="EaseOut" /></DoubleAnimation.EasingFunction></DoubleAnimation>
                                         <DoubleAnimation Storyboard.TargetName="Lift" Storyboard.TargetProperty="Y" To="-2" Duration="0:0:0.2"><DoubleAnimation.EasingFunction><CubicEase EasingMode="EaseOut" /></DoubleAnimation.EasingFunction></DoubleAnimation>
                                     </Storyboard>
                                 </BeginStoryboard>
@@ -782,6 +834,7 @@
                                     <Storyboard>
                                         <DoubleAnimation Storyboard.TargetName="Hover" Storyboard.TargetProperty="Opacity" To="0" Duration="0:0:0.18" />
                                         <DoubleAnimation Storyboard.TargetName="Rim" Storyboard.TargetProperty="Opacity" To="0" Duration="0:0:0.26"><DoubleAnimation.EasingFunction><CubicEase EasingMode="EaseOut" /></DoubleAnimation.EasingFunction></DoubleAnimation>
+                                        <DoubleAnimation Storyboard.TargetName="Spot" Storyboard.TargetProperty="Opacity" To="0" Duration="0:0:0.26"><DoubleAnimation.EasingFunction><CubicEase EasingMode="EaseOut" /></DoubleAnimation.EasingFunction></DoubleAnimation>
                                         <DoubleAnimation Storyboard.TargetName="Lift" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.26"><DoubleAnimation.EasingFunction><CubicEase EasingMode="EaseOut" /></DoubleAnimation.EasingFunction></DoubleAnimation>
                                     </Storyboard>
                                 </BeginStoryboard>

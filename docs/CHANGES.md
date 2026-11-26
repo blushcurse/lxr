@@ -32,6 +32,12 @@ Roblox protocol handlers (`roblox://`) are registered by whichever launcher inst
 - Orb animation pauses when its window is inactive, hidden, minimized, or Roblox is running (checked on focus/visibility changes, never on a timer).
 - Optional "Higher Roblox priority" setting (off by default). It sets a normal Windows priority; LXRStrap does not claim FPS gains from it.
 
+## Stage 5
+- Cursor presets: LXR Glass, LXR Red and LXR Mono, each with arrow, text and shift-lock images (64x64, hotspot at the centre like Roblox's own cursors). The text and shift-lock slots are community-documented; if Roblox doesn't read them nothing changes.
+- Red accent added. Cards and buttons get a mouse-following light and glass edge on hover.
+- Smoothness: page transitions no longer animate the whole page and its blocks at once, moving blocks render from a GPU bitmap while they move, and the FastFlags page is built once instead of on every visit. This was not profiled on a real machine.
+- Menus/textures: a button opens the installed Roblox textures folder so you can build your own mod pack. No file names (emote wheel etc.) are shipped because they could not be verified.
+
 ## Known limits
 - Not compiled or run by the author yet (no Windows/.NET SDK available). First CI build is the first test.
 - New UI is English only. Other locale files still contain old strings for removed screens.

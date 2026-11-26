@@ -73,5 +73,6 @@
     <SolidColorBrush x:Key="LxrToggleKnobBrush" Color="#FFFFFFFF" />
     <SolidColorBrush x:Key="LxrPopupBrush" Color="#FF0D0D10" />
     <SolidColorBrush x:Key="LxrPopupBorderBrush" Color="#33FFFFFF" />
+    <Color x:Key="LxrSpotColor">#30FFFFFF</Color>
     <SolidColorBrush x:Key="LxrScrimBrush" Color="#B3000000" />
 </ResourceDictionary>

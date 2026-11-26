@@ -27,6 +27,7 @@ namespace Bloxstrap.LXR.Services
         public static readonly IReadOnlyDictionary<string, string> AccentPresets = new Dictionary<string, string>
         {
             ["Default"] = "",
+            ["Red"] = "#FF3B4E",
             ["Ice"] = "#9BD4FF",
             ["Violet"] = "#B79CFF",
             ["Mint"] = "#7CF0C8",

@@ -16,7 +16,17 @@ namespace Bloxstrap.LXR.UI.Pages
         {
             InitializeComponent();
             BuildChips();
-            Loaded += (_, _) => Reload();
+            // built once; later visits only refresh values, so switching back to this page is instant
+            Loaded += (_, _) =>
+            {
+                if (_all.Count == 0)
+                    Reload();
+                else
+                {
+                    OffBanner.Visibility = App.Settings.Prop.UseFastFlagManager ? Visibility.Collapsed : Visibility.Visible;
+                    RefreshAfterChange();
+                }
+            };
         }
 
         private void BuildChips()

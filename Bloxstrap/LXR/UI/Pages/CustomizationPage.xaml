@@ -169,6 +169,11 @@
                 </ItemsControl>
                 <TextBlock x:Name="ModEmpty" Text="No mod packs yet." Style="{StaticResource LxrFaint}" Margin="2,6,0,0" />
 
+                <TextBlock Text="Menus and textures" Style="{StaticResource LxrHeading}" Margin="0,30,0,4" />
+                <TextBlock Style="{StaticResource LxrDim}" TextWrapping="Wrap" Margin="0,0,0,12"
+                           Text="Roblox draws menus such as the emote wheel and the in-game UI from image files in its content folder. File names can change between Roblox versions, so LXRStrap doesn't guess them. Browse the current files, make your own versions with the same name and folder layout, and import them as a mod pack above. Turning the pack off puts the originals back." />
+                <Button Content="Browse Roblox textures" HorizontalAlignment="Left" Click="OpenTextures_Click" />
+
                 <Button Content="Open mods folder" Margin="0,18,0,0" HorizontalAlignment="Left" Style="{StaticResource LxrGhostButton}" Click="OpenMods_Click" />
             </StackPanel>
         </ScrollViewer>
