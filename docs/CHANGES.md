@@ -42,3 +42,8 @@ Roblox protocol handlers (`roblox://`) are registered by whichever launcher inst
 - Not compiled or run by the author yet (no Windows/.NET SDK available). First CI build is the first test.
 - New UI is English only. Other locale files still contain old strings for removed screens.
 - Tray menu windows (server info/history) still use the previous WPF UI look.
+
+## Stage 6
+
+- **Server location popup.** With "Look up server location" on, LXRStrap shows a normal Windows-style dialog ("Server location: ...") with an OK button when it sees you join a game. No tray clicking needed. If the lookup fails it stays quiet. The setting now works without restarting LXRStrap.
+- **Modern cursor maker.** Customize > Cursors > "Make a modern cursor": pick White, Black, Red or Accent, pick a size (50% to 300%), press Create, then Apply. It draws a smooth, rounded Windows 11 style pointer, text beam and shift-lock ring. This is our own drawing in that style, not a copy of any specific third-party set. Not tested on a real Windows machine; whether Roblox uses the text-beam and shift-lock slots is unverified, the arrow is the sure one.
