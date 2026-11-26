@@ -249,7 +249,7 @@ namespace Bloxstrap.LXR.UI.Pages
                 Toggle(() => s.HideRPCButtons, v => s.HideRPCButtons = v)));
             p.Children.Add(Row("Show your account on Discord", "Adds your Roblox account to the status.",
                 Toggle(() => s.ShowAccountOnRichPresence, v => s.ShowAccountOnRichPresence = v)));
-            p.Children.Add(Row("Look up server location", "Lets the tray menu show the region of the server you joined. This sends the server's IP address to a public geolocation service.",
+            p.Children.Add(Row("Look up server location", "When you join a game, shows a small window with the server's location. This sends the server's IP address to a public geolocation service (ipinfo.io).",
                 Toggle(() => s.ShowServerDetails, v => s.ShowServerDetails = v)));
 
             return p;

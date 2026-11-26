@@ -35,7 +35,8 @@ namespace Bloxstrap.UI
 
             _notifyIcon.MouseClick += MouseClickEventHandler;
 
-            if (_activityWatcher is not null && App.Settings.Prop.ShowServerDetails)
+            // subscribe always; the handler checks the setting, so toggling it works without a restart
+            if (_activityWatcher is not null)
                 _activityWatcher.OnGameJoin += OnGameJoin;
 
             _menuContainer = new(_watcher);
@@ -56,37 +57,30 @@ namespace Bloxstrap.UI
         #region Activity handlers
         public async void OnGameJoin(object? sender, EventArgs e)
         {
-            if (_activityWatcher is null)
+            if (_activityWatcher is null || !App.Settings.Prop.ShowServerDetails)
                 return;
-            
-            string? serverLocation = await _activityWatcher.Data.QueryServerLocation();
+
+            string? serverLocation = null;
+
+            try
+            {
+                serverLocation = await _activityWatcher.Data.QueryServerLocation();
+            }
+            catch (Exception ex)
+            {
+                App.Logger.WriteException("NotifyIconWrapper::OnGameJoin", ex);
+            }
 
             if (string.IsNullOrEmpty(serverLocation))
             {
-                ShowAlert(
-                    string.Format(Strings.Dialog_Connectivity_UnableToConnect, "ipinfo.io"),
-                    Strings.ActivityWatcher_LocationQueryFailed,
-                    10,
-                    null
-                );
-
+                // lookup failed (offline, private address, service down): stay quiet instead of interrupting the game
+                App.Logger.WriteLine("NotifyIconWrapper::OnGameJoin", "No server location available, not showing a dialog");
                 return;
             }
 
-            string title = _activityWatcher.Data.ServerType switch
-            {
-                ServerType.Public => Strings.ContextMenu_ServerInformation_Notification_Title_Public,
-                ServerType.Private => Strings.ContextMenu_ServerInformation_Notification_Title_Private,
-                ServerType.Reserved => Strings.ContextMenu_ServerInformation_Notification_Title_Reserved,
-                _ => ""
-            };
-
-            ShowAlert(
-                title,
-                String.Format(Strings.ContextMenu_ServerInformation_Notification_Text, serverLocation),
-                10,
-                (_, _) => _menuContainer.ShowServerInformationWindow()
-            );
+            // a normal Windows-style dialog with an OK button; shown without blocking the watcher
+            System.Windows.Application.Current.Dispatcher.BeginInvoke((Action)(() =>
+                Frontend.ShowMessageBox($"Server location: {serverLocation}", System.Windows.MessageBoxImage.Information)));
         }
         #endregion
 

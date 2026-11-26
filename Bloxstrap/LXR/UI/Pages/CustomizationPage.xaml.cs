@@ -153,6 +153,44 @@ namespace Bloxstrap.LXR.UI.Pages
             }
         }
 
+        private void GenSize_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
+        {
+            if (GenSizeText is null)
+                return;
+
+            int percent = (int)GenSize.Value;
+            GenSizeText.Text = $"{percent}%  ·  {CursorGenerator.CanvasFor(percent)} px";
+        }
+
+        private void GenCreate_Click(object sender, RoutedEventArgs e)
+        {
+            CursorLook look = GenDark.IsChecked == true ? CursorLook.Dark
+                : GenRed.IsChecked == true ? CursorLook.Red
+                : GenAccent.IsChecked == true ? CursorLook.Accent
+                : CursorLook.Light;
+
+            int percent = (int)GenSize.Value;
+
+            Color accent = Colors.White;
+            if (TryFindResource("LxrAccentSolidBrush") is SolidColorBrush brush)
+                accent = brush.Color;
+
+            try
+            {
+                var files = CursorGenerator.Generate(look, percent, accent);
+                var pack = CursorService.SaveGenerated(CursorGenerator.PackName(look, percent), files);
+
+                _selectedPack = pack;
+                LoadPacks();
+                ImportMessages.Text = $"Created \"{pack.Name}\". Press Apply to use it; it takes effect the next time Roblox starts.";
+            }
+            catch (Exception ex)
+            {
+                App.Logger.WriteException("CustomizationPage::GenCreate", ex);
+                ImportMessages.Text = "Could not create the cursor: " + ex.Message;
+            }
+        }
+
         private void ImportCursors(IEnumerable<string> paths)
         {
             CursorImportResult result;

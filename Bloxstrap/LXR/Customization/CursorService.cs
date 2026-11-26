@@ -1,4 +1,4 @@
-using System.IO.Compression;
+﻿using System.IO.Compression;
 using System.Windows.Media.Imaging;
 
 namespace Bloxstrap.LXR.Customization
@@ -97,6 +97,28 @@ namespace Bloxstrap.LXR.Customization
 
                 File.WriteAllText(Path.Combine(folder, ".builtin"), "");
             }
+        }
+
+        /// <summary>Saves generated PNGs as a user cursor pack in the library (replacing a generated pack of the same name).</summary>
+        public static CursorPack SaveGenerated(string name, Dictionary<string, byte[]> files)
+        {
+            foreach (char bad in Path.GetInvalidFileNameChars())
+                name = name.Replace(bad, '_');
+
+            string folder = Path.Combine(Library, name);
+
+            if (File.Exists(Path.Combine(folder, ".builtin")))
+                throw new InvalidOperationException("That name belongs to a built-in pack.");
+
+            if (Directory.Exists(folder))
+                Directory.Delete(folder, true);
+
+            Directory.CreateDirectory(folder);
+
+            foreach (var (file, data) in files)
+                File.WriteAllBytes(Path.Combine(folder, file), data);
+
+            return GetPacks().First(x => x.Name == name);
         }
 
         public static List<CursorPack> GetPacks()
