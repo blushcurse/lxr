@@ -71,16 +71,30 @@ namespace Bloxstrap.UI
                 App.Logger.WriteException("NotifyIconWrapper::OnGameJoin", ex);
             }
 
-            if (string.IsNullOrEmpty(serverLocation))
-            {
-                // lookup failed (offline, private address, service down): stay quiet instead of interrupting the game
-                App.Logger.WriteLine("NotifyIconWrapper::OnGameJoin", "No server location available, not showing a dialog");
-                return;
-            }
+            App.Logger.WriteLine("NotifyIconWrapper::OnGameJoin", $"Server location result: {serverLocation ?? "(none)"}");
 
-            // a normal Windows-style dialog with an OK button; shown without blocking the watcher
+            string text = string.IsNullOrEmpty(serverLocation)
+                ? "Server location: could not be looked up (no internet, or this server hides its address)."
+                : $"Server location: {serverLocation}";
+
+            // A normal Windows-style dialog with an OK button. It is marked always-on-top, otherwise Windows
+            // keeps a new window behind the fullscreen game and it looks like nothing happened.
             System.Windows.Application.Current.Dispatcher.BeginInvoke((Action)(() =>
-                Frontend.ShowMessageBox($"Server location: {serverLocation}", System.Windows.MessageBoxImage.Information)));
+            {
+                try
+                {
+                    var box = new LXR.UI.MessageBoxWindow(text, System.Windows.MessageBoxImage.Information, System.Windows.MessageBoxButton.OK)
+                    {
+                        Topmost = true
+                    };
+                    box.Loaded += (_, _) => box.Activate();
+                    box.ShowDialog();
+                }
+                catch (Exception ex)
+                {
+                    App.Logger.WriteException("NotifyIconWrapper::OnGameJoin", ex);
+                }
+            }));
         }
         #endregion
 

@@ -37,7 +37,7 @@ namespace Bloxstrap.LXR.Customization
 
     /// <summary>
     /// Cursor library, import validation and apply/restore. Roblox reads these PNGs from
-    /// content\textures\Cursors\KeyboardMouse. We never touch Roblox's own install folder: files go into the
+    /// content\textures\Cursors\KeyboardMouse (the shift-lock one sits in content\textures). We never touch Roblox's own install folder: files go into the
     /// Modifications folder, which the bootstrapper copies over Roblox at launch (and removes again when a file
     /// disappears from it, which is how originals come back).
     /// </summary>
@@ -54,7 +54,7 @@ namespace Bloxstrap.LXR.Customization
             new CursorSlot { FileName = "ArrowCursor.png", Label = "Arrow", Hint = "The normal pointer." },
             new CursorSlot { FileName = "ArrowFarCursor.png", Label = "Arrow (far)", Hint = "Pointer variant Roblox uses at a distance. Usually the same image as Arrow." },
             new CursorSlot { FileName = "IBeamCursor.png", Label = "Text (I-beam)", Hint = "Pointer over text boxes. Community-documented slot. If Roblox doesn't read it, the original stays." },
-            new CursorSlot { FileName = "MouseLockedCursor.png", Label = "Shift lock", Hint = "Pointer while the mouse is locked. Community-documented slot; if Roblox doesn't read it, the original stays." },
+            new CursorSlot { FileName = "MouseLockedCursor.png", Label = "Shift lock", Hint = "Pointer while the mouse is locked. Goes in the textures folder, not the cursors folder." },
         };
 
         private static string Root => Path.Combine(Paths.Lxr, "Cursors");
@@ -62,6 +62,23 @@ namespace Bloxstrap.LXR.Customization
         private static string Backups => Path.Combine(Root, "Backups");
         private static string StatePath => Path.Combine(Root, "State.json");
         private static string TargetDirectory => Path.Combine(Paths.Modifications, "content", "textures", "Cursors", "KeyboardMouse");
+        private static string TexturesDirectory => Path.Combine(Paths.Modifications, "content", "textures");
+
+        /// <summary>Roblox keeps the shift-lock cursor directly in content\textures; the other cursors are in Cursors\KeyboardMouse.</summary>
+        private static string DestinationFor(string slot) =>
+            Path.Combine(slot == "MouseLockedCursor.png" ? TexturesDirectory : TargetDirectory, slot);
+
+        /// <summary>Earlier LXRStrap builds wrote the shift-lock image to the wrong folder; clean that up.</summary>
+        private static void RemoveMisplacedShiftLock()
+        {
+            string stale = Path.Combine(TargetDirectory, "MouseLockedCursor.png");
+
+            if (File.Exists(stale))
+            {
+                Filesystem.AssertReadOnly(stale);
+                File.Delete(stale);
+            }
+        }
 
         #region Library
         /// <summary>Makes the two cursor sets that shipped with Bloxstrap available as built-in packs.</summary>
@@ -426,7 +443,9 @@ namespace Bloxstrap.LXR.Customization
             var state = LoadState();
 
             Directory.CreateDirectory(TargetDirectory);
+            Directory.CreateDirectory(TexturesDirectory);
             Directory.CreateDirectory(Backups);
+            RemoveMisplacedShiftLock();
 
             // slots we filled earlier but this pack doesn't cover go back to the original
             foreach (string slot in state.AppliedSlots.Where(s => !pack.Files.ContainsKey(s)).ToList())
@@ -434,7 +453,7 @@ namespace Bloxstrap.LXR.Customization
 
             foreach (var pair in pack.Files)
             {
-                string destination = Path.Combine(TargetDirectory, pair.Key);
+                string destination = DestinationFor(pair.Key);
                 string backup = Path.Combine(Backups, pair.Key);
 
                 // something is already there that we didn't write: keep it so "restore" can return it
@@ -455,6 +474,8 @@ namespace Bloxstrap.LXR.Customization
         {
             var state = LoadState();
 
+            RemoveMisplacedShiftLock();
+
             foreach (string slot in state.AppliedSlots.ToList())
                 RestoreSlot(slot);
 
@@ -465,7 +486,7 @@ namespace Bloxstrap.LXR.Customization
 
         private static void RestoreSlot(string slot)
         {
-            string destination = Path.Combine(TargetDirectory, slot);
+            string destination = DestinationFor(slot);
             string backup = Path.Combine(Backups, slot);
 
             if (File.Exists(destination))

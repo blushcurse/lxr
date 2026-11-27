@@ -47,32 +47,78 @@ namespace Bloxstrap.LXR.Customization
                 _ => (Color.FromRgb(0xFF, 0xFF, 0xFF), Color.FromRgb(0x0B, 0x0B, 0x0D)),
             };
 
-            byte[] arrow = Render(size, dc => DrawArrow(dc, size, u, fill, edge));
-            byte[] beam = Render(size, dc => DrawBeam(dc, size, u, fill, edge));
-            byte[] lockRing = Render(size, dc => DrawReticle(dc, size, u, fill, edge));
+            byte[] arrow = Render(size, (dc, big, u) => DrawArrow(dc, big, u, fill, edge));
+            byte[] beam = Render(size, (dc, big, u) => DrawBeam(dc, big, u, fill, edge));
+            byte[] crosshair = Render(size, (dc, big, u) => DrawReticle(dc, big, u, fill, edge));
 
             return new Dictionary<string, byte[]>
             {
                 ["ArrowCursor.png"] = arrow,
                 ["ArrowFarCursor.png"] = arrow,
                 ["IBeamCursor.png"] = beam,
-                ["MouseLockedCursor.png"] = lockRing,
+                ["MouseLockedCursor.png"] = crosshair,
             };
         }
 
-        private static byte[] Render(int size, Action<DrawingContext> draw)
+        private const int Oversample = 4;
+
+        /// <summary>
+        /// Draws the shape at 4x the final size and averages it down. That gives clean, evenly smooth edges at every
+        /// size instead of the jagged or blurry edges you get from drawing straight at a small size.
+        /// </summary>
+        private static byte[] Render(int size, Action<DrawingContext, int, double> draw)
         {
+            int big = size * Oversample;
+
             var visual = new DrawingVisual();
-            RenderOptions.SetEdgeMode(visual, EdgeMode.Unspecified);
 
             using (var dc = visual.RenderOpen())
-                draw(dc);
+                draw(dc, big, big / 64.0);
 
-            var bitmap = new RenderTargetBitmap(size, size, 96, 96, PixelFormats.Pbgra32);
+            var bitmap = new RenderTargetBitmap(big, big, 96, 96, PixelFormats.Pbgra32);
             bitmap.Render(visual);
 
+            int bigStride = big * 4;
+            var source = new byte[bigStride * big];
+            bitmap.CopyPixels(source, bigStride, 0);
+
+            int stride = size * 4;
+            var result = new byte[stride * size];
+            int samples = Oversample * Oversample;
+
+            for (int y = 0; y < size; y++)
+            {
+                for (int x = 0; x < size; x++)
+                {
+                    int b = 0, g = 0, r = 0, a = 0;
+
+                    for (int sy = 0; sy < Oversample; sy++)
+                    {
+                        int row = (y * Oversample + sy) * bigStride + x * Oversample * 4;
+
+                        for (int sx = 0; sx < Oversample; sx++)
+                        {
+                            int i = row + sx * 4;
+                            b += source[i];
+                            g += source[i + 1];
+                            r += source[i + 2];
+                            a += source[i + 3];
+                        }
+                    }
+
+                    // premultiplied values average correctly
+                    int o = y * stride + x * 4;
+                    result[o] = (byte)((b + samples / 2) / samples);
+                    result[o + 1] = (byte)((g + samples / 2) / samples);
+                    result[o + 2] = (byte)((r + samples / 2) / samples);
+                    result[o + 3] = (byte)((a + samples / 2) / samples);
+                }
+            }
+
+            var final = BitmapSource.Create(size, size, 96, 96, PixelFormats.Pbgra32, null, result, stride);
+
             var encoder = new PngBitmapEncoder();
-            encoder.Frames.Add(BitmapFrame.Create(bitmap));
+            encoder.Frames.Add(BitmapFrame.Create(final));
 
             using var stream = new MemoryStream();
             encoder.Save(stream);
@@ -99,10 +145,18 @@ namespace Bloxstrap.LXR.Customization
         {
             dc.PushTransform(new TranslateTransform(1.0 * u, 1.6 * u));
 
+            // faint black, never the cursor's own colour
+            Brush? shadowFill = null;
+            if (fillBrush is not null)
+            {
+                shadowFill = new SolidColorBrush(Color.FromArgb(18, 0, 0, 0));
+                shadowFill.Freeze();
+            }
+
             for (int i = 3; i >= 1; i--)
             {
-                var pen = MakePen(Color.FromArgb(18, 0, 0, 0), baseWidth + i * 1.6 * u);
-                dc.DrawGeometry(fillBrush, pen, shape);
+                var pen = MakePen(Color.FromArgb(18, 0, 0, 0), baseWidth + i * 1.2 * u);
+                dc.DrawGeometry(shadowFill, pen, shape);
             }
 
             dc.Pop();
@@ -128,18 +182,17 @@ namespace Bloxstrap.LXR.Customization
         {
             double c = size / 2.0;
 
-            // Pointer outline, tip at (0,0). Corners get rounded by the round-joined strokes below.
-            Geometry shape = Poly(u,
-                (0, 0), (0, 24), (6.5, 18.5), (10.5, 27.5), (14.6, 25.8), (10.8, 17), (19, 17));
+            // Tailless rounded pointer in the Windows 11 / Fluent style: a soft triangle with the tip at the top-left.
+            Geometry shape = Poly(u, (0, 0), (0, 25), (21, 16.8));
 
-            dc.PushTransform(new TranslateTransform(c + 1.2 * u, c + 1.2 * u));
+            dc.PushTransform(new TranslateTransform(c + 1.4 * u, c + 1.4 * u));
 
             var fillBrush = new SolidColorBrush(fill);
             fillBrush.Freeze();
 
-            Shadow(dc, shape, u, 2.6 * u, fillBrush);
-            dc.DrawGeometry(fillBrush, MakePen(edge, 3.0 * u), shape);      // outline
-            dc.DrawGeometry(fillBrush, MakePen(fill, 1.4 * u), shape);      // rounds and softens the inner corners
+            Shadow(dc, shape, u, 3.4 * u, fillBrush);
+            dc.DrawGeometry(fillBrush, MakePen(edge, 3.6 * u), shape);   // outline, rounded by the round joins
+            dc.DrawGeometry(fillBrush, MakePen(fill, 2.2 * u), shape);   // softens the inside corners
 
             dc.Pop();
         }
@@ -147,8 +200,8 @@ namespace Bloxstrap.LXR.Customization
         private static void DrawBeam(DrawingContext dc, int size, double u, Color fill, Color edge)
         {
             double c = size / 2.0;
-            const double half = 11.0;   // half height of the stem
-            const double serif = 4.2;   // half width of the serifs
+            const double half = 11.5;   // half height of the stem
+            const double serif = 4.6;   // half width of the serifs
 
             var stem = new StreamGeometry();
             using (var ctx = stem.Open())
@@ -163,33 +216,41 @@ namespace Bloxstrap.LXR.Customization
             stem.Freeze();
 
             dc.PushTransform(new TranslateTransform(c, c));
-            Shadow(dc, stem, u, 2.4 * u, null);
-            dc.DrawGeometry(null, MakePen(edge, 4.0 * u), stem);
-            dc.DrawGeometry(null, MakePen(fill, 1.8 * u), stem);
+            Shadow(dc, stem, u, 3.4 * u, null);
+            dc.DrawGeometry(null, MakePen(edge, 4.4 * u), stem);
+            dc.DrawGeometry(null, MakePen(fill, 2.0 * u), stem);
             dc.Pop();
         }
 
+        // Precision crosshair: a ring with four ticks and a centre dot, centred exactly on the click point.
         private static void DrawReticle(DrawingContext dc, int size, double u, Color fill, Color edge)
         {
             double c = size / 2.0;
-            var center = new Point(c, c);
+            var centre = new Point(c, c);
 
-            var ring = new EllipseGeometry(center, 9 * u, 9 * u);
-            var dot = new EllipseGeometry(center, 1.6 * u, 1.6 * u);
-            ring.Freeze();
-            dot.Freeze();
+            var shape = new GeometryGroup { FillRule = FillRule.Nonzero };
+            shape.Children.Add(new EllipseGeometry(centre, 8.5 * u, 8.5 * u));
+
+            foreach (var (dx, dy) in new[] { (0, -1), (1, 0), (0, 1), (-1, 0) })
+            {
+                shape.Children.Add(new LineGeometry(
+                    new Point(c + dx * 4.0 * u, c + dy * 4.0 * u),
+                    new Point(c + dx * 13.0 * u, c + dy * 13.0 * u)));
+            }
+
+            shape.Freeze();
 
             var fillBrush = new SolidColorBrush(fill);
             var edgeBrush = new SolidColorBrush(edge);
             fillBrush.Freeze();
             edgeBrush.Freeze();
 
-            Shadow(dc, ring, u, 2.4 * u, null);
-            dc.DrawGeometry(null, MakePen(edge, 4.2 * u), ring);
-            dc.DrawGeometry(null, MakePen(fill, 2.0 * u), ring);
+            Shadow(dc, shape, u, 3.0 * u, null);
+            dc.DrawGeometry(null, MakePen(edge, 4.0 * u), shape);
+            dc.DrawGeometry(null, MakePen(fill, 1.7 * u), shape);
 
-            dc.DrawGeometry(edgeBrush, null, new EllipseGeometry(center, 3.0 * u, 3.0 * u));
-            dc.DrawGeometry(fillBrush, null, dot);
+            dc.DrawEllipse(edgeBrush, null, centre, 2.8 * u, 2.8 * u);
+            dc.DrawEllipse(fillBrush, null, centre, 1.4 * u, 1.4 * u);
         }
     }
 }
