@@ -251,6 +251,8 @@ namespace Bloxstrap.LXR.UI.Pages
                 Toggle(() => s.ShowAccountOnRichPresence, v => s.ShowAccountOnRichPresence = v)));
             p.Children.Add(Row("Look up server location", "When you join a game, shows a small window with the server's location. This sends the server's IP address to a public geolocation service (ipinfo.io).",
                 Toggle(() => s.ShowServerDetails, v => s.ShowServerDetails = v)));
+            p.Children.Add(Row("Test server location", "Reads your newest Roblox log and shows the location of the last server you joined. Use it to check that the lookup works.",
+                ActionButton("Test now", () => _ = LXR.Services.ServerLocationNotice.RunLogCheckAsync())));
 
             return p;
         }

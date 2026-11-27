@@ -30,6 +30,8 @@ namespace Bloxstrap.Integrations
         
         public event EventHandler<string>? OnLogEntry;
         public event EventHandler? OnGameJoin;
+        /// <summary>Raised when a join starts (server address known). Used as a fallback if the "joined" line never shows.</summary>
+        public event EventHandler? OnJoinStarted;
         public event EventHandler? OnGameLeave;
         public event EventHandler? OnLogOpen;
         public event EventHandler? OnAppClose;
@@ -203,6 +205,7 @@ namespace Bloxstrap.Integrations
                     }
 
                     App.Logger.WriteLine(LOG_IDENT, $"Joining Game ({Data})");
+                    OnJoinStarted?.Invoke(this, EventArgs.Empty);
                 }
             }
             else if (!InGame && Data.PlaceId != 0)

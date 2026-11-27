@@ -55,6 +55,8 @@
                             <RadioButton x:Name="GenRed" Content="Red" Style="{StaticResource LxrSegment}" GroupName="genlook" />
                             <RadioButton x:Name="GenAccent" Content="Accent" Style="{StaticResource LxrSegment}" GroupName="genlook" />
                         </StackPanel>
+                        <CheckBox x:Name="GenGameBar" Content="Game Bar friendly shift-lock" Margin="0,12,0,0" Click="GenSize_Changed" />
+                        <TextBlock x:Name="GenGameBarNote" Style="{StaticResource LxrFaint}" TextWrapping="Wrap" Margin="0,2,0,0" />
                         <Grid Margin="0,12,0,0">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="Auto" />

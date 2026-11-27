@@ -31,10 +31,24 @@ namespace Bloxstrap.LXR.Customization
             return size % 2 == 0 ? size : size + 1; // even, so the centre sits on a pixel edge
         }
 
-        public static string PackName(CursorLook look, int percent) =>
-            $"Fluent {look} {Math.Clamp(percent, MinPercent, MaxPercent)}%";
+        public static string PackName(CursorLook look, int percent, bool gameBarFriendly = false) =>
+            $"Fluent {look} {Math.Clamp(percent, MinPercent, MaxPercent)}%" + (gameBarFriendly ? " GameBar" : "");
 
-        public static Dictionary<string, byte[]> Generate(CursorLook look, int percent, Color accent)
+        // The crosshair is drawn within 13 units of the click point, plus half its outline.
+        private const double CrosshairReach = 15.5;
+
+        /// <summary>Canvas edge of the shift-lock image. Game Bar friendly mode crops it as tight as the drawing allows.</summary>
+        public static int ShiftLockCanvasFor(int percent, bool gameBarFriendly)
+        {
+            if (!gameBarFriendly)
+                return CanvasFor(percent);
+
+            double perUnit = Math.Clamp(percent, MinPercent, MaxPercent) / 100.0;
+            int size = (int)Math.Ceiling(CrosshairReach * 2 * perUnit) + 2;
+            return size % 2 == 0 ? size : size + 1;
+        }
+
+        public static Dictionary<string, byte[]> Generate(CursorLook look, int percent, Color accent, bool gameBarFriendly = false)
         {
             int size = CanvasFor(percent);
             double u = size / 64.0;
@@ -47,9 +61,13 @@ namespace Bloxstrap.LXR.Customization
                 _ => (Color.FromRgb(0xFF, 0xFF, 0xFF), Color.FromRgb(0x0B, 0x0B, 0x0D)),
             };
 
-            byte[] arrow = Render(size, (dc, big, u) => DrawArrow(dc, big, u, fill, edge));
-            byte[] beam = Render(size, (dc, big, u) => DrawBeam(dc, big, u, fill, edge));
-            byte[] crosshair = Render(size, (dc, big, u) => DrawReticle(dc, big, u, fill, edge));
+            double perUnit = size / 64.0;
+            byte[] arrow = Render(size, perUnit, (dc, big, u) => DrawArrow(dc, big, u, fill, edge));
+            byte[] beam = Render(size, perUnit, (dc, big, u) => DrawBeam(dc, big, u, fill, edge));
+
+            int lockSize = ShiftLockCanvasFor(percent, gameBarFriendly);
+            double lockPerUnit = gameBarFriendly ? Math.Clamp(percent, MinPercent, MaxPercent) / 100.0 : perUnit;
+            byte[] crosshair = Render(lockSize, lockPerUnit, (dc, big, u) => DrawReticle(dc, big, u, fill, edge, !gameBarFriendly));
 
             return new Dictionary<string, byte[]>
             {
@@ -66,14 +84,14 @@ namespace Bloxstrap.LXR.Customization
         /// Draws the shape at 4x the final size and averages it down. That gives clean, evenly smooth edges at every
         /// size instead of the jagged or blurry edges you get from drawing straight at a small size.
         /// </summary>
-        private static byte[] Render(int size, Action<DrawingContext, int, double> draw)
+        private static byte[] Render(int size, double pxPerUnit, Action<DrawingContext, int, double> draw)
         {
             int big = size * Oversample;
 
             var visual = new DrawingVisual();
 
             using (var dc = visual.RenderOpen())
-                draw(dc, big, big / 64.0);
+                draw(dc, big, pxPerUnit * Oversample);
 
             var bitmap = new RenderTargetBitmap(big, big, 96, 96, PixelFormats.Pbgra32);
             bitmap.Render(visual);
@@ -223,7 +241,7 @@ namespace Bloxstrap.LXR.Customization
         }
 
         // Precision crosshair: a ring with four ticks and a centre dot, centred exactly on the click point.
-        private static void DrawReticle(DrawingContext dc, int size, double u, Color fill, Color edge)
+        private static void DrawReticle(DrawingContext dc, int size, double u, Color fill, Color edge, bool withShadow)
         {
             double c = size / 2.0;
             var centre = new Point(c, c);
@@ -245,7 +263,9 @@ namespace Bloxstrap.LXR.Customization
             fillBrush.Freeze();
             edgeBrush.Freeze();
 
-            Shadow(dc, shape, u, 3.0 * u, null);
+            if (withShadow)
+                Shadow(dc, shape, u, 3.0 * u, null);
+
             dc.DrawGeometry(null, MakePen(edge, 4.0 * u), shape);
             dc.DrawGeometry(null, MakePen(fill, 1.7 * u), shape);
 

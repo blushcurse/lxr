@@ -47,3 +47,11 @@ Roblox protocol handlers (`roblox://`) are registered by whichever launcher inst
 
 - **Server location popup.** With "Look up server location" on, LXRStrap shows a normal Windows-style dialog ("Server location: ...") with an OK button when it sees you join a game. No tray clicking needed. If the lookup fails it stays quiet. The setting now works without restarting LXRStrap.
 - **Modern cursor maker.** Customize > Cursors > "Make a modern cursor": pick White, Black, Red or Accent, pick a size (50% to 300%), press Create, then Apply. It draws a smooth, rounded Windows 11 style pointer, text beam and shift-lock ring. This is our own drawing in that style, not a copy of any specific third-party set. Not tested on a real Windows machine; whether Roblox uses the text-beam and shift-lock slots is unverified, the arrow is the sure one.
+
+## Stage 7
+
+- **Shift-lock cursor folder.** The shift-lock image now goes in Roblox's `textures` folder (not `Cursors`). Applying a pack also removes the misplaced copy older builds wrote.
+- **Cursors redrawn** as tailless rounded Windows 11 style pointers plus a crosshair for shift lock, drawn at 4x and averaged down so edges stay smooth at every size.
+- **Game Bar friendly shift-lock** (Customize > Cursors). Xbox Game Bar draws the cursor image shifted by half its size. A single image cannot be right for both Roblox (centre of the image) and Game Bar (corner of the image), so this option crops the shift-lock image as tight as possible to shrink the recording offset. It does not remove it. The page shows the expected offset in pixels.
+- **Server location popup** now has a fallback trigger (20 s after the join started if the "joined" line never appears), an always-on-top window, and a **Test now** button in Settings that reads your newest Roblox log and shows the result.
+- **New icon.** Black glass squircle with a white liquid bar crossing a red one (an X) and a drip.

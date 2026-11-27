@@ -58,6 +58,7 @@ namespace Bloxstrap.LXR.UI.Pages
                 LoadPacks();
                 BuildGraphics();
                 LoadAssets();
+                GenSize_Changed(this, new RoutedEventArgs());
             };
         }
 
@@ -160,7 +161,17 @@ namespace Bloxstrap.LXR.UI.Pages
 
             int percent = (int)GenSize.Value;
             GenSizeText.Text = $"{percent}%  ·  {CursorGenerator.CanvasFor(percent)} px";
+
+            bool friendly = GenGameBar.IsChecked == true;
+            int lockSize = CursorGenerator.ShiftLockCanvasFor(percent, friendly);
+
+            GenGameBarNote.Text = friendly
+                ? $"Shift-lock image is {lockSize} px. Xbox Game Bar draws a cursor shifted by half its image size, so in recordings it sits about {lockSize / 2} px off. In the game it stays exactly centred."
+                : $"Normal shift-lock image is {lockSize} px, so Xbox Game Bar recordings show it about {lockSize / 2} px off. Tick this to shrink that.";
         }
+
+        private void GenSize_Changed(object sender, RoutedEventArgs e) =>
+            GenSize_ValueChanged(sender, new RoutedPropertyChangedEventArgs<double>(GenSize.Value, GenSize.Value));
 
         private void GenCreate_Click(object sender, RoutedEventArgs e)
         {
@@ -177,8 +188,9 @@ namespace Bloxstrap.LXR.UI.Pages
 
             try
             {
-                var files = CursorGenerator.Generate(look, percent, accent);
-                var pack = CursorService.SaveGenerated(CursorGenerator.PackName(look, percent), files);
+                bool friendly = GenGameBar.IsChecked == true;
+                var files = CursorGenerator.Generate(look, percent, accent, friendly);
+                var pack = CursorService.SaveGenerated(CursorGenerator.PackName(look, percent, friendly), files);
 
                 _selectedPack = pack;
                 LoadPacks();

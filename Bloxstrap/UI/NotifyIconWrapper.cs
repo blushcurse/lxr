@@ -37,7 +37,10 @@ namespace Bloxstrap.UI
 
             // subscribe always; the handler checks the setting, so toggling it works without a restart
             if (_activityWatcher is not null)
+            {
                 _activityWatcher.OnGameJoin += OnGameJoin;
+                _activityWatcher.OnJoinStarted += OnJoinStarted;
+            }
 
             _menuContainer = new(_watcher);
             _menuContainer.Show();
@@ -55,46 +58,61 @@ namespace Bloxstrap.UI
         #endregion
 
         #region Activity handlers
-        public async void OnGameJoin(object? sender, EventArgs e)
+        private readonly object _shownLock = new();
+        private string? _shownKey;
+
+        public void OnGameJoin(object? sender, EventArgs e)
+        {
+            App.Logger.WriteLine("NotifyIconWrapper::OnGameJoin", "Joined a game");
+            _ = ShowLocationAsync();
+        }
+
+        // Fallback: if the "joined" log line never arrives (log wording differs between Roblox versions),
+        // show the location 20 seconds after the join started anyway.
+        public async void OnJoinStarted(object? sender, EventArgs e)
         {
             if (_activityWatcher is null || !App.Settings.Prop.ShowServerDetails)
                 return;
+
+            string jobId = _activityWatcher.Data.JobId;
+            App.Logger.WriteLine("NotifyIconWrapper::OnJoinStarted", $"Join started ({jobId}), fallback armed");
+
+            await Task.Delay(20000);
+
+            if (_activityWatcher.Data.JobId == jobId)
+                await ShowLocationAsync();
+        }
+
+        private async Task ShowLocationAsync()
+        {
+            if (_activityWatcher is null || !App.Settings.Prop.ShowServerDetails)
+                return;
+
+            var data = _activityWatcher.Data;
+            string key = $"{data.PlaceId}/{data.JobId}";
+
+            lock (_shownLock)
+            {
+                if (_shownKey == key)
+                    return;
+
+                _shownKey = key;
+            }
 
             string? serverLocation = null;
 
             try
             {
-                serverLocation = await _activityWatcher.Data.QueryServerLocation();
+                serverLocation = await data.QueryServerLocation();
             }
             catch (Exception ex)
             {
-                App.Logger.WriteException("NotifyIconWrapper::OnGameJoin", ex);
+                App.Logger.WriteException("NotifyIconWrapper::ShowLocation", ex);
             }
 
-            App.Logger.WriteLine("NotifyIconWrapper::OnGameJoin", $"Server location result: {serverLocation ?? "(none)"}");
+            App.Logger.WriteLine("NotifyIconWrapper::ShowLocation", $"Server location result: {serverLocation ?? "(none)"}");
 
-            string text = string.IsNullOrEmpty(serverLocation)
-                ? "Server location: could not be looked up (no internet, or this server hides its address)."
-                : $"Server location: {serverLocation}";
-
-            // A normal Windows-style dialog with an OK button. It is marked always-on-top, otherwise Windows
-            // keeps a new window behind the fullscreen game and it looks like nothing happened.
-            System.Windows.Application.Current.Dispatcher.BeginInvoke((Action)(() =>
-            {
-                try
-                {
-                    var box = new LXR.UI.MessageBoxWindow(text, System.Windows.MessageBoxImage.Information, System.Windows.MessageBoxButton.OK)
-                    {
-                        Topmost = true
-                    };
-                    box.Loaded += (_, _) => box.Activate();
-                    box.ShowDialog();
-                }
-                catch (Exception ex)
-                {
-                    App.Logger.WriteException("NotifyIconWrapper::OnGameJoin", ex);
-                }
-            }));
+            LXR.Services.ServerLocationNotice.Show(LXR.Services.ServerLocationNotice.Describe(serverLocation));
         }
         #endregion
 
