@@ -264,7 +264,7 @@ namespace Bloxstrap
                         backgroundUpdaterMutexOpen = false;
                     }
                    
-                    if (!backgroundUpdaterMutexOpen)
+                    if (!backgroundUpdaterMutexOpen && ConfirmRobloxUpdate())
                     {
                         if (IsEligibleForBackgroundUpdate())
                             StartBackgroundUpdater();
@@ -308,6 +308,31 @@ namespace Bloxstrap
             await mutex.ReleaseAsync();
 
             Dialog?.CloseBootstrapper();
+        }
+
+        /// <summary>Asks Yes/No before replacing an installed Roblox with a newer one. No = launch what is installed.</summary>
+        private bool ConfirmRobloxUpdate()
+        {
+            const string LOG_IDENT = "Bootstrapper::ConfirmRobloxUpdate";
+
+            if (_mustUpgrade || !App.Settings.Prop.AskBeforeRobloxUpdate || App.LaunchSettings.QuietFlag.Active)
+                return true;
+
+            if (string.IsNullOrEmpty(AppData.DistributionState.VersionGuid))
+                return true; // nothing installed yet, so there is nothing to keep
+
+            string name = IsStudioLaunch ? "Roblox Studio" : "Roblox";
+            string installed = Utilities.GetRobloxVersion(AppData)?.ToString() ?? "unknown";
+            string latest = _latestVersion?.ToString() ?? "unknown";
+
+            var answer = Frontend.ShowMessageBox(
+                $"A new version of {name} is available.\n\nInstalled: {installed}\nNew: {latest}\n\nUpdate now? If you choose No, the installed version is launched (Roblox may refuse to join games until it is updated).",
+                MessageBoxImage.Question,
+                MessageBoxButton.YesNo);
+
+            App.Logger.WriteLine(LOG_IDENT, $"Roblox update answer: {answer}");
+
+            return answer == MessageBoxResult.Yes;
         }
 
         private RegistryKey GetChannelRegistryKey() => Registry.CurrentUser.CreateSubKey($"SOFTWARE\\ROBLOX Corporation\\Environments\\{AppData.RegistryName}\\Channel");
@@ -787,10 +812,24 @@ namespace Bloxstrap
             var versionComparison = Utilities.CompareVersions(App.Version, releaseInfo.TagName);
 
             // check if we aren't using a deployed build, so we can update to one if a new version comes out
-            if (App.IsProductionBuild && versionComparison == VersionComparison.Equal || versionComparison == VersionComparison.GreaterThan)
+            if (versionComparison != VersionComparison.LessThan)
             {
                 App.Logger.WriteLine(LOG_IDENT, "No updates found");
                 return false;
+            }
+
+            if (!App.LaunchSettings.QuietFlag.Active)
+            {
+                var answer = Frontend.ShowMessageBox(
+                    $"A new version of {App.ProjectName} is available.\n\nYou have {App.Version}. The new one is {releaseInfo.TagName}.\n\nUpdate now? Your settings are kept.",
+                    MessageBoxImage.Question,
+                    MessageBoxButton.YesNo);
+
+                if (answer != MessageBoxResult.Yes)
+                {
+                    App.Logger.WriteLine(LOG_IDENT, "Update declined");
+                    return false;
+                }
             }
 
             if (Dialog is not null)

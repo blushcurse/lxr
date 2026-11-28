@@ -71,11 +71,29 @@ namespace Bloxstrap.LXR.Services
                 dict["LxrAccentBrush"] = gradient;
                 dict["LxrAccentSolidBrush"] = new SolidColorBrush(color);
                 dict["LxrAccentSoftBrush"] = new SolidColorBrush(Color.FromArgb(0x30, color.R, color.G, color.B));
+                dict["LxrAccentColor"] = color;
+                dict["LxrAccentGlowBrush"] = RadialBrush(color, 0x55);
+                dict["LxrAccentAuraBrush"] = RadialBrush(color, 0x3D);
+                dict["LxrAccentFaintBrush"] = new SolidColorBrush(Color.FromArgb(0x18, color.R, color.G, color.B));
+
+                var line = new LinearGradientBrush { StartPoint = new Point(0, 0), EndPoint = new Point(1, 0) };
+                line.GradientStops.Add(new GradientStop(color, 0));
+                line.GradientStops.Add(new GradientStop(Color.FromArgb(0, color.R, color.G, color.B), 1));
+                dict["LxrAccentLineBrush"] = line;
+
                 dict["LxrOnAccentBrush"] = new SolidColorBrush(luminance > 0.55 ? Colors.Black : Colors.White);
                 resources.Add(dict);
             }
 
             AppearanceChanged?.Invoke(null, EventArgs.Empty);
+        }
+
+        private static RadialGradientBrush RadialBrush(Color color, byte alpha)
+        {
+            var brush = new RadialGradientBrush { Center = new Point(0.5, 0.5), GradientOrigin = new Point(0.5, 0.5), RadiusX = 0.5, RadiusY = 0.5 };
+            brush.GradientStops.Add(new GradientStop(Color.FromArgb(alpha, color.R, color.G, color.B), 0));
+            brush.GradientStops.Add(new GradientStop(Color.FromArgb(0, color.R, color.G, color.B), 1));
+            return brush;
         }
 
         public static void NotifyAppearanceChanged() => AppearanceChanged?.Invoke(null, EventArgs.Empty);

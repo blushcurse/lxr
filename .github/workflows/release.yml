@@ -1,0 +1,47 @@
+name: Release
+# Every push to main builds LXRStrap and publishes it as a GitHub release (v1.0.<run number>).
+# LXRStrap checks that releases page when it opens and asks the user Yes/No before updating itself.
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: windows-latest
+
+    steps:
+    - uses: actions/checkout@v6
+      with:
+        submodules: true
+
+    - uses: actions/setup-dotnet@v5
+      with:
+        dotnet-version: '6.0.x'
+
+    - name: Work out the version
+      id: ver
+      shell: bash
+      run: echo "version=1.0.${{ github.run_number }}" >> "$GITHUB_OUTPUT"
+
+    - name: Restore dependencies
+      run: dotnet restore
+
+    - name: Publish
+      run: dotnet publish -p:PublishSingleFile=true -p:Version=${{ steps.ver.outputs.version }} -p:FileVersion=${{ steps.ver.outputs.version }} -p:CommitHash=${{ github.sha }} -p:CommitRef=tag/v${{ steps.ver.outputs.version }} -r win-x64 -c Release --self-contained false .\Bloxstrap\Bloxstrap.csproj
+
+    - name: Create release
+      shell: bash
+      env:
+        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        COMMIT_MESSAGE: ${{ github.event.head_commit.message }}
+      run: |
+        gh release create "v${{ steps.ver.outputs.version }}" \
+          "Bloxstrap/bin/Release/net6.0-windows/win-x64/publish/LXRStrap.exe" \
+          --target "${{ github.sha }}" \
+          --title "LXRStrap v${{ steps.ver.outputs.version }}" \
+          --notes "$COMMIT_MESSAGE" \
+          --latest

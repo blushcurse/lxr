@@ -4,32 +4,30 @@
              IsHitTestVisible="False" SnapsToDevicePixels="False">
     <UserControl.Resources>
         <Storyboard x:Key="Flow">
-            <DoubleAnimation Storyboard.TargetName="B1" Storyboard.TargetProperty="X" From="-30" To="45" Duration="0:0:7.3" AutoReverse="True" RepeatBehavior="Forever">
+            <!-- the whole mark floats gently -->
+            <DoubleAnimation Storyboard.TargetName="Float" Storyboard.TargetProperty="Y" From="-4" To="4" Duration="0:0:3.6" AutoReverse="True" RepeatBehavior="Forever">
                 <DoubleAnimation.EasingFunction><SineEase EasingMode="EaseInOut" /></DoubleAnimation.EasingFunction>
             </DoubleAnimation>
-            <DoubleAnimation Storyboard.TargetName="B1" Storyboard.TargetProperty="Y" From="20" To="-35" Duration="0:0:5.9" AutoReverse="True" RepeatBehavior="Forever">
+            <!-- accent glow breathes -->
+            <DoubleAnimation Storyboard.TargetName="Glow" Storyboard.TargetProperty="Opacity" From="0.45" To="1" Duration="0:0:2.8" AutoReverse="True" RepeatBehavior="Forever">
                 <DoubleAnimation.EasingFunction><SineEase EasingMode="EaseInOut" /></DoubleAnimation.EasingFunction>
             </DoubleAnimation>
-            <DoubleAnimation Storyboard.TargetName="B2" Storyboard.TargetProperty="X" From="40" To="-40" Duration="0:0:8.7" AutoReverse="True" RepeatBehavior="Forever">
-                <DoubleAnimation.EasingFunction><SineEase EasingMode="EaseInOut" /></DoubleAnimation.EasingFunction>
-            </DoubleAnimation>
-            <DoubleAnimation Storyboard.TargetName="B2" Storyboard.TargetProperty="Y" From="-25" To="35" Duration="0:0:6.7" AutoReverse="True" RepeatBehavior="Forever">
-                <DoubleAnimation.EasingFunction><SineEase EasingMode="EaseInOut" /></DoubleAnimation.EasingFunction>
-            </DoubleAnimation>
-            <DoubleAnimation Storyboard.TargetName="D1" Storyboard.TargetProperty="X" From="-45" To="30" Duration="0:0:6.1" AutoReverse="True" RepeatBehavior="Forever">
-                <DoubleAnimation.EasingFunction><SineEase EasingMode="EaseInOut" /></DoubleAnimation.EasingFunction>
-            </DoubleAnimation>
-            <DoubleAnimation Storyboard.TargetName="D1" Storyboard.TargetProperty="Y" From="-30" To="40" Duration="0:0:9.1" AutoReverse="True" RepeatBehavior="Forever">
-                <DoubleAnimation.EasingFunction><SineEase EasingMode="EaseInOut" /></DoubleAnimation.EasingFunction>
-            </DoubleAnimation>
-            <DoubleAnimation Storyboard.TargetName="D2" Storyboard.TargetProperty="X" From="35" To="-35" Duration="0:0:7.9" AutoReverse="True" RepeatBehavior="Forever">
-                <DoubleAnimation.EasingFunction><SineEase EasingMode="EaseInOut" /></DoubleAnimation.EasingFunction>
-            </DoubleAnimation>
-            <DoubleAnimation Storyboard.TargetName="D2" Storyboard.TargetProperty="Y" From="30" To="-30" Duration="0:0:5.3" AutoReverse="True" RepeatBehavior="Forever">
-                <DoubleAnimation.EasingFunction><SineEase EasingMode="EaseInOut" /></DoubleAnimation.EasingFunction>
-            </DoubleAnimation>
-            <!-- the drip: forms, stretches, falls and fades -->
-            <DoubleAnimation Storyboard.TargetName="DripMove" Storyboard.TargetProperty="Y" From="0" To="30" Duration="0:0:3.4" RepeatBehavior="Forever">
+            <DoubleAnimation Storyboard.TargetName="GlowScale" Storyboard.TargetProperty="ScaleX" From="0.92" To="1.08" Duration="0:0:2.8" AutoReverse="True" RepeatBehavior="Forever" />
+            <DoubleAnimation Storyboard.TargetName="GlowScale" Storyboard.TargetProperty="ScaleY" From="0.92" To="1.08" Duration="0:0:2.8" AutoReverse="True" RepeatBehavior="Forever" />
+            <!-- light sweeps across the liquid bars, with a pause between sweeps -->
+            <DoubleAnimationUsingKeyFrames Storyboard.TargetName="SheenA" Storyboard.TargetProperty="X" Duration="0:0:5" RepeatBehavior="Forever">
+                <LinearDoubleKeyFrame KeyTime="0:0:0" Value="-70" />
+                <LinearDoubleKeyFrame KeyTime="0:0:2.2" Value="200" />
+                <LinearDoubleKeyFrame KeyTime="0:0:5" Value="200" />
+            </DoubleAnimationUsingKeyFrames>
+            <DoubleAnimationUsingKeyFrames Storyboard.TargetName="SheenB" Storyboard.TargetProperty="X" Duration="0:0:5" RepeatBehavior="Forever">
+                <LinearDoubleKeyFrame KeyTime="0:0:0" Value="-70" />
+                <LinearDoubleKeyFrame KeyTime="0:0:1.2" Value="-70" />
+                <LinearDoubleKeyFrame KeyTime="0:0:3.4" Value="200" />
+                <LinearDoubleKeyFrame KeyTime="0:0:5" Value="200" />
+            </DoubleAnimationUsingKeyFrames>
+            <!-- the drip forms, stretches, falls and fades -->
+            <DoubleAnimation Storyboard.TargetName="DripMove" Storyboard.TargetProperty="Y" From="0" To="34" Duration="0:0:3.4" RepeatBehavior="Forever">
                 <DoubleAnimation.EasingFunction><QuadraticEase EasingMode="EaseIn" /></DoubleAnimation.EasingFunction>
             </DoubleAnimation>
             <DoubleAnimation Storyboard.TargetName="DripScale" Storyboard.TargetProperty="ScaleY" From="0.35" To="1.15" Duration="0:0:3.4" RepeatBehavior="Forever" />
@@ -41,96 +39,82 @@
                 <LinearDoubleKeyFrame KeyTime="0:0:3.4" Value="0" />
             </DoubleAnimationUsingKeyFrames>
         </Storyboard>
+
+        <LinearGradientBrush x:Key="RedFill" StartPoint="0,0" EndPoint="1,1">
+            <GradientStop Color="#FFFF6070" Offset="0" />
+            <GradientStop Color="#FFB00020" Offset="1" />
+        </LinearGradientBrush>
+        <LinearGradientBrush x:Key="WhiteFill" StartPoint="0,0" EndPoint="1,1">
+            <GradientStop Color="#FFFFFFFF" Offset="0" />
+            <GradientStop Color="#FF98A2B4" Offset="1" />
+        </LinearGradientBrush>
+        <LinearGradientBrush x:Key="SheenFill" StartPoint="0,0" EndPoint="1,0">
+            <GradientStop Color="#00FFFFFF" Offset="0" />
+            <GradientStop Color="#99FFFFFF" Offset="0.5" />
+            <GradientStop Color="#00FFFFFF" Offset="1" />
+        </LinearGradientBrush>
+        <LinearGradientBrush x:Key="TopLight" StartPoint="0,0" EndPoint="0,1">
+            <GradientStop Color="#77FFFFFF" Offset="0" />
+            <GradientStop Color="#00FFFFFF" Offset="1" />
+        </LinearGradientBrush>
     </UserControl.Resources>
 
     <Viewbox Stretch="Uniform">
         <Canvas Width="200" Height="250">
-            <!-- sphere body -->
-            <Ellipse Canvas.Left="0" Canvas.Top="0" Width="200" Height="200">
+            <!-- accent glow behind the mark -->
+            <Ellipse x:Name="Glow" Canvas.Left="-10" Canvas.Top="-10" Width="220" Height="220" Opacity="0.7" RenderTransformOrigin="0.5,0.5" Fill="{DynamicResource LxrAccentGlowBrush}">
+                <Ellipse.RenderTransform><ScaleTransform x:Name="GlowScale" /></Ellipse.RenderTransform>
+            </Ellipse>
+            <Ellipse Canvas.Left="20" Canvas.Top="20" Width="160" Height="160" Opacity="0.55">
                 <Ellipse.Fill>
-                    <RadialGradientBrush Center="0.5,0.5" GradientOrigin="0.38,0.3" RadiusX="0.75" RadiusY="0.75">
-                        <GradientStop Color="#FFF4F4F7" Offset="0" />
-                        <GradientStop Color="#FF8B8B96" Offset="0.45" />
-                        <GradientStop Color="#FF0B0B0E" Offset="1" />
+                    <RadialGradientBrush>
+                        <GradientStop Color="#99FF3B4E" Offset="0" />
+                        <GradientStop Color="#00FF3B4E" Offset="1" />
                     </RadialGradientBrush>
                 </Ellipse.Fill>
             </Ellipse>
 
-            <!-- liquid: drifting light and dark masses clipped to the sphere -->
-            <Canvas Width="200" Height="200" ClipToBounds="True">
-                <Canvas.Clip>
-                    <EllipseGeometry Center="100,100" RadiusX="99" RadiusY="99" />
-                </Canvas.Clip>
+            <Canvas>
+                <Canvas.RenderTransform><TranslateTransform x:Name="Float" /></Canvas.RenderTransform>
 
-                <Ellipse Canvas.Left="20" Canvas.Top="30" Width="120" Height="120">
-                    <Ellipse.Fill>
-                        <RadialGradientBrush>
-                            <GradientStop Color="#EEFFFFFF" Offset="0" />
-                            <GradientStop Color="#00FFFFFF" Offset="1" />
-                        </RadialGradientBrush>
-                    </Ellipse.Fill>
-                    <Ellipse.RenderTransform><TranslateTransform x:Name="B1" /></Ellipse.RenderTransform>
-                </Ellipse>
-                <Ellipse Canvas.Left="70" Canvas.Top="80" Width="110" Height="110">
-                    <Ellipse.Fill>
-                        <RadialGradientBrush>
-                            <GradientStop Color="#B3FFFFFF" Offset="0" />
-                            <GradientStop Color="#00FFFFFF" Offset="1" />
-                        </RadialGradientBrush>
-                    </Ellipse.Fill>
-                    <Ellipse.RenderTransform><TranslateTransform x:Name="B2" /></Ellipse.RenderTransform>
-                </Ellipse>
-                <Ellipse Canvas.Left="-10" Canvas.Top="70" Width="130" Height="130">
-                    <Ellipse.Fill>
-                        <RadialGradientBrush>
-                            <GradientStop Color="#F2000000" Offset="0" />
-                            <GradientStop Color="#00000000" Offset="1" />
-                        </RadialGradientBrush>
-                    </Ellipse.Fill>
-                    <Ellipse.RenderTransform><TranslateTransform x:Name="D1" /></Ellipse.RenderTransform>
-                </Ellipse>
-                <Ellipse Canvas.Left="80" Canvas.Top="-5" Width="110" Height="110">
-                    <Ellipse.Fill>
-                        <RadialGradientBrush>
-                            <GradientStop Color="#D9000000" Offset="0" />
-                            <GradientStop Color="#00000000" Offset="1" />
-                        </RadialGradientBrush>
-                    </Ellipse.Fill>
-                    <Ellipse.RenderTransform><TranslateTransform x:Name="D2" /></Ellipse.RenderTransform>
-                </Ellipse>
+                <!-- red liquid bar (/) -->
+                <Grid Canvas.Left="17.5" Canvas.Top="83.5" Width="165" Height="33" RenderTransformOrigin="0.5,0.5">
+                    <Grid.RenderTransform><RotateTransform Angle="-45" /></Grid.RenderTransform>
+                    <Grid.Clip><RectangleGeometry Rect="0,0,165,33" RadiusX="16.5" RadiusY="16.5" /></Grid.Clip>
+                    <Rectangle Fill="{StaticResource RedFill}" />
+                    <Rectangle Height="9" Margin="12,4,12,0" VerticalAlignment="Top" RadiusX="4.5" RadiusY="4.5" Fill="{StaticResource TopLight}" />
+                    <Rectangle Width="46" HorizontalAlignment="Left" Fill="{StaticResource SheenFill}">
+                        <Rectangle.RenderTransform><TranslateTransform x:Name="SheenB" X="-70" /></Rectangle.RenderTransform>
+                    </Rectangle>
+                </Grid>
 
-                <!-- glass highlight -->
-                <Ellipse Canvas.Left="34" Canvas.Top="14" Width="90" Height="46">
-                    <Ellipse.Fill>
-                        <RadialGradientBrush>
-                            <GradientStop Color="#88FFFFFF" Offset="0" />
-                            <GradientStop Color="#00FFFFFF" Offset="1" />
-                        </RadialGradientBrush>
-                    </Ellipse.Fill>
-                </Ellipse>
-            </Canvas>
+                <!-- dark gap where the white bar crosses over -->
+                <Border Canvas.Left="10.5" Canvas.Top="76.5" Width="179" Height="47" CornerRadius="23.5" Background="#FF08080B" RenderTransformOrigin="0.5,0.5">
+                    <Border.RenderTransform><RotateTransform Angle="45" /></Border.RenderTransform>
+                </Border>
 
-            <!-- glass rim -->
-            <Ellipse Canvas.Left="0.75" Canvas.Top="0.75" Width="198.5" Height="198.5" StrokeThickness="1.5">
-                <Ellipse.Stroke>
-                    <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
-                        <GradientStop Color="#CCFFFFFF" Offset="0" />
-                        <GradientStop Color="#22FFFFFF" Offset="0.5" />
-                        <GradientStop Color="#66FFFFFF" Offset="1" />
-                    </LinearGradientBrush>
-                </Ellipse.Stroke>
-            </Ellipse>
+                <!-- white liquid bar (\) -->
+                <Grid Canvas.Left="17.5" Canvas.Top="83.5" Width="165" Height="33" RenderTransformOrigin="0.5,0.5">
+                    <Grid.RenderTransform><RotateTransform Angle="45" /></Grid.RenderTransform>
+                    <Grid.Clip><RectangleGeometry Rect="0,0,165,33" RadiusX="16.5" RadiusY="16.5" /></Grid.Clip>
+                    <Rectangle Fill="{StaticResource WhiteFill}" />
+                    <Rectangle Height="9" Margin="12,4,12,0" VerticalAlignment="Top" RadiusX="4.5" RadiusY="4.5" Fill="{StaticResource TopLight}" />
+                    <Rectangle Width="46" HorizontalAlignment="Left" Fill="{StaticResource SheenFill}">
+                        <Rectangle.RenderTransform><TranslateTransform x:Name="SheenA" X="-70" /></Rectangle.RenderTransform>
+                    </Rectangle>
+                </Grid>
 
-            <!-- drip -->
-            <Canvas x:Name="Drip" Canvas.Left="100" Canvas.Top="196" Opacity="0">
-                <Path Fill="#F2FFFFFF" Data="M0,-4 C 5,6 9,12 9,18 A9,9 0 1 1 -9,18 C -9,12 -5,6 0,-4 Z">
-                    <Path.RenderTransform>
-                        <TransformGroup>
-                            <ScaleTransform x:Name="DripScale" ScaleX="0.35" ScaleY="0.35" />
-                            <TranslateTransform x:Name="DripMove" />
-                        </TransformGroup>
-                    </Path.RenderTransform>
-                </Path>
+                <!-- drip from the end of the white bar -->
+                <Canvas x:Name="Drip" Canvas.Left="153" Canvas.Top="158" Opacity="0">
+                    <Path Fill="#F2F4F6FA" Data="M0,-4 C 5,6 9,12 9,18 A9,9 0 1 1 -9,18 C -9,12 -5,6 0,-4 Z">
+                        <Path.RenderTransform>
+                            <TransformGroup>
+                                <ScaleTransform x:Name="DripScale" ScaleX="0.35" ScaleY="0.35" />
+                                <TranslateTransform x:Name="DripMove" />
+                            </TransformGroup>
+                        </Path.RenderTransform>
+                    </Path>
+                </Canvas>
             </Canvas>
         </Canvas>
     </Viewbox>

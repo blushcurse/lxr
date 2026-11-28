@@ -1,75 +1,114 @@
-﻿using Bloxstrap.Integrations;
+using System.Windows.Forms;
 
-using Bloxstrap.UI.Elements.ContextMenu;
+using Bloxstrap.Integrations;
+using Bloxstrap.LXR.Services;
 
 namespace Bloxstrap.UI
 {
+    /// <summary>
+    /// The tray icon that lives in the background watcher process while Roblox runs. It is a plain Windows tray menu
+    /// (no WPF windows), so nothing here can fail because of a theme or resource problem, and it also owns the
+    /// "Server location" popup that appears when you join a game.
+    /// </summary>
     public class NotifyIconWrapper : IDisposable
     {
-        // lol who needs properly structured mvvm and xaml when you have the absolute catastrophe that this is
-
         private bool _disposing = false;
 
-        private readonly System.Windows.Forms.NotifyIcon _notifyIcon;
-        
-        private readonly MenuContainer _menuContainer;
-        
+        private readonly NotifyIcon _notifyIcon;
+        private readonly ContextMenuStrip _menu = new();
         private readonly Watcher _watcher;
+
+        private readonly ToolStripMenuItem _presenceItem = new("Discord rich presence") { CheckOnClick = true, Checked = true };
+        private readonly ToolStripMenuItem _locationItem = new("Show server location");
+        private readonly ToolStripMenuItem _inviteItem = new("Copy invite link");
+        private readonly ToolStripMenuItem _logItem = new("Open this Roblox log");
+        private readonly ToolStripMenuItem _closeItem = new("Close Roblox");
 
         private ActivityWatcher? _activityWatcher => _watcher.ActivityWatcher;
 
-        EventHandler? _alertClickHandler;
+        private readonly object _shownLock = new();
+        private string? _shownKey;
 
         public NotifyIconWrapper(Watcher watcher)
         {
-            App.Logger.WriteLine("NotifyIconWrapper::NotifyIconWrapper", "Initializing notification area icon");
+            const string LOG_IDENT = "NotifyIconWrapper::NotifyIconWrapper";
+
+            App.Logger.WriteLine(LOG_IDENT, "Initializing notification area icon");
 
             _watcher = watcher;
 
-            _notifyIcon = new(new System.ComponentModel.Container())
+            var header = new ToolStripMenuItem($"{App.ProjectName} v{App.Version}") { Enabled = false };
+
+            _presenceItem.Click += (_, _) => _watcher.RichPresence?.SetVisibility(_presenceItem.Checked);
+            _locationItem.Click += (_, _) => _ = ShowLocationAsync(force: true);
+            _inviteItem.Click += (_, _) => CopyInvite();
+            _logItem.Click += (_, _) =>
+            {
+                string? location = _activityWatcher?.LogLocation;
+
+                if (location is not null)
+                    Utilities.ShellExecute(location);
+            };
+            _closeItem.Click += (_, _) => CloseRoblox();
+
+            _menu.Items.AddRange(new ToolStripItem[]
+            {
+                header,
+                new ToolStripSeparator(),
+                _presenceItem,
+                _locationItem,
+                _inviteItem,
+                _logItem,
+                new ToolStripSeparator(),
+                _closeItem
+            });
+
+            // visibility is decided when the menu opens, so nothing touches the menu from the watcher thread
+            _menu.Opening += (_, _) =>
+            {
+                bool tracking = _activityWatcher is not null;
+                bool inGame = tracking && _activityWatcher!.InGame;
+
+                _presenceItem.Visible = _watcher.RichPresence is not null;
+                _locationItem.Visible = inGame;
+                _inviteItem.Visible = inGame && _activityWatcher!.Data.ServerType == ServerType.Public;
+                _logItem.Visible = tracking && !string.IsNullOrEmpty(_activityWatcher!.LogLocation);
+            };
+
+            _notifyIcon = new NotifyIcon(new System.ComponentModel.Container())
             {
                 Icon = Properties.Resources.IconBloxstrap,
                 Text = App.ProjectName,
+                ContextMenuStrip = _menu,
                 Visible = true
             };
 
-            _notifyIcon.MouseClick += MouseClickEventHandler;
+            // left click = location of the current server
+            _notifyIcon.MouseClick += (_, e) =>
+            {
+                if (e.Button == MouseButtons.Left && _activityWatcher is { InGame: true })
+                    _ = ShowLocationAsync(force: true);
+            };
 
-            // subscribe always; the handler checks the setting, so toggling it works without a restart
             if (_activityWatcher is not null)
             {
                 _activityWatcher.OnGameJoin += OnGameJoin;
                 _activityWatcher.OnJoinStarted += OnJoinStarted;
             }
 
-            _menuContainer = new(_watcher);
-            _menuContainer.Show();
+            App.Logger.WriteLine(LOG_IDENT, $"Tray ready (activityTracking={_activityWatcher is not null}, serverLocation={App.Settings.Prop.ShowServerDetails})");
         }
-
-        #region Context menu
-        public void MouseClickEventHandler(object? sender, System.Windows.Forms.MouseEventArgs e)
-        {
-            if (e.Button != System.Windows.Forms.MouseButtons.Right)
-                return;
-
-            _menuContainer.Activate();
-            _menuContainer.ContextMenu.IsOpen = true;
-        }
-        #endregion
 
         #region Activity handlers
-        private readonly object _shownLock = new();
-        private string? _shownKey;
-
-        public void OnGameJoin(object? sender, EventArgs e)
+        private void OnGameJoin(object? sender, EventArgs e)
         {
             App.Logger.WriteLine("NotifyIconWrapper::OnGameJoin", "Joined a game");
-            _ = ShowLocationAsync();
+            _ = ShowLocationAsync(force: false);
         }
 
-        // Fallback: if the "joined" log line never arrives (log wording differs between Roblox versions),
-        // show the location 20 seconds after the join started anyway.
-        public async void OnJoinStarted(object? sender, EventArgs e)
+        // Fallback: if the "joined" line never shows up (log wording differs between Roblox versions), show the
+        // location 10 seconds after the join started.
+        private async void OnJoinStarted(object? sender, EventArgs e)
         {
             if (_activityWatcher is null || !App.Settings.Prop.ShowServerDetails)
                 return;
@@ -77,82 +116,80 @@ namespace Bloxstrap.UI
             string jobId = _activityWatcher.Data.JobId;
             App.Logger.WriteLine("NotifyIconWrapper::OnJoinStarted", $"Join started ({jobId}), fallback armed");
 
-            await Task.Delay(20000);
+            await Task.Delay(10000);
 
             if (_activityWatcher.Data.JobId == jobId)
-                await ShowLocationAsync();
+                await ShowLocationAsync(force: false);
         }
 
-        private async Task ShowLocationAsync()
+        private async Task ShowLocationAsync(bool force)
         {
-            if (_activityWatcher is null || !App.Settings.Prop.ShowServerDetails)
-                return;
-
-            var data = _activityWatcher.Data;
-            string key = $"{data.PlaceId}/{data.JobId}";
-
-            lock (_shownLock)
-            {
-                if (_shownKey == key)
-                    return;
-
-                _shownKey = key;
-            }
-
-            string? serverLocation = null;
+            const string LOG_IDENT = "NotifyIconWrapper::ShowLocation";
 
             try
             {
-                serverLocation = await data.QueryServerLocation();
+                if (_activityWatcher is null)
+                    return;
+
+                if (!force && !App.Settings.Prop.ShowServerDetails)
+                    return;
+
+                var data = _activityWatcher.Data;
+                string key = $"{data.PlaceId}/{data.JobId}";
+
+                if (!force)
+                {
+                    lock (_shownLock)
+                    {
+                        if (_shownKey == key)
+                            return;
+
+                        _shownKey = key;
+                    }
+                }
+
+                string? location = null;
+
+                try
+                {
+                    location = await data.QueryServerLocation();
+                }
+                catch (Exception ex)
+                {
+                    App.Logger.WriteException(LOG_IDENT, ex);
+                }
+
+                App.Logger.WriteLine(LOG_IDENT, $"Server location result: {location ?? "(none)"}");
+
+                ServerLocationNotice.Show(ServerLocationNotice.Describe(location));
             }
             catch (Exception ex)
             {
-                App.Logger.WriteException("NotifyIconWrapper::ShowLocation", ex);
+                App.Logger.WriteException(LOG_IDENT, ex);
             }
-
-            App.Logger.WriteLine("NotifyIconWrapper::ShowLocation", $"Server location result: {serverLocation ?? "(none)"}");
-
-            LXR.Services.ServerLocationNotice.Show(LXR.Services.ServerLocationNotice.Describe(serverLocation));
         }
         #endregion
 
-        // we may need to create our own handler for this, because this sorta sucks
-        public void ShowAlert(string caption, string message, int duration, EventHandler? clickHandler)
+        private void CopyInvite()
         {
-            string id = Guid.NewGuid().ToString()[..8];
+            string? link = _activityWatcher?.Data.GetInviteDeeplink();
 
-            string LOG_IDENT = $"NotifyIconWrapper::ShowAlert.{id}";
+            if (link is null)
+                return;
 
-            App.Logger.WriteLine(LOG_IDENT, $"Showing alert for {duration} seconds (clickHandler={clickHandler is not null})");
-            App.Logger.WriteLine(LOG_IDENT, $"{caption}: {message.Replace("\n", "\\n")}");
+            System.Windows.Application.Current.Dispatcher.BeginInvoke((Action)(() => System.Windows.Clipboard.SetDataObject(link)));
+        }
 
-            _notifyIcon.BalloonTipTitle = caption;
-            _notifyIcon.BalloonTipText = message;
+        private void CloseRoblox()
+        {
+            var result = Frontend.ShowMessageBox(
+                Strings.ContextMenu_CloseRobloxMessage,
+                System.Windows.MessageBoxImage.Warning,
+                System.Windows.MessageBoxButton.YesNo
+            );
 
-            if (_alertClickHandler is not null)
-            {
-                App.Logger.WriteLine(LOG_IDENT, "Previous alert still present, erasing click handler");
-                _notifyIcon.BalloonTipClicked -= _alertClickHandler;
-            }
-
-            _alertClickHandler = clickHandler;
-            _notifyIcon.BalloonTipClicked += clickHandler;
-
-            _notifyIcon.ShowBalloonTip(duration);
-
-            Task.Run(async () =>
-            {
-                await Task.Delay(duration * 1000);
-             
-                _notifyIcon.BalloonTipClicked -= clickHandler;
-
-                App.Logger.WriteLine(LOG_IDENT, "Duration over, erasing current click handler");
-
-                if (_alertClickHandler == clickHandler)
-                    _alertClickHandler = null;
-                else
-                    App.Logger.WriteLine(LOG_IDENT, "Click handler has been overridden by another alert");
-            });
+            if (result == System.Windows.MessageBoxResult.Yes)
+                _watcher.KillRobloxProcess();
         }
 
         public void Dispose()
@@ -164,8 +201,9 @@ namespace Bloxstrap.UI
 
             App.Logger.WriteLine("NotifyIconWrapper::Dispose", "Disposing NotifyIcon");
 
-            _menuContainer.Dispatcher.Invoke(_menuContainer.Close);
+            _notifyIcon.Visible = false;
             _notifyIcon.Dispose();
+            _menu.Dispose();
 
             GC.SuppressFinalize(this);
         }

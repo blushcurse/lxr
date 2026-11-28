@@ -21,8 +21,8 @@ namespace Bloxstrap
         public const string ProjectOwner = "LXRStrap";
         // Upstream project, kept for attribution/help links only.
         public const string ProjectRepository = "bloxstraplabs/bloxstrap";
-        // LXRStrap update source. Empty = update checking is disabled, so LXRStrap never self-replaces with upstream Bloxstrap.
-        public const string UpdateRepository = "";
+        // LXRStrap update source (its own GitHub releases, never upstream Bloxstrap).
+        public const string UpdateRepository = "blushcurse/lxr";
         public const string ProjectDownloadLink = "https://github.com/blushcurse/lxr";
         public const string ProjectHelpLink = "https://github.com/blushcurse/lxr#readme";
         public const string ProjectSupportLink = "https://github.com/blushcurse/lxr/issues";

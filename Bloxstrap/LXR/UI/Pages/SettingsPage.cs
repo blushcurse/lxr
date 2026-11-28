@@ -264,7 +264,10 @@ namespace Bloxstrap.LXR.UI.Pages
 
             p.Children.Add(Row("Update Roblox in the background", "While Roblox is running, check for a newer version and prepare it so the next launch is quicker.",
                 Toggle(() => s.BackgroundUpdatesEnabled, v => s.BackgroundUpdatesEnabled = v)));
-            p.Children.Add(Note("Roblox itself is always updated when you launch it. LXRStrap does not update itself automatically; get new versions from the project's GitHub releases page."));
+            p.Children.Add(Row("Ask before updating Roblox", "When a new Roblox version is found, ask Yes or No first instead of updating silently.",
+                Toggle(() => s.AskBeforeRobloxUpdate, v => s.AskBeforeRobloxUpdate = v)));
+            p.Children.Add(Row("Check for LXRStrap updates", "When you open LXRStrap, look for a newer version on GitHub and ask Yes or No before replacing it.",
+                Toggle(() => s.CheckForUpdates, v => s.CheckForUpdates = v)));
             p.Children.Add(ActionButton("Open releases page", () => Utilities.ShellExecute(App.ProjectDownloadLink), "LxrGhostButton"));
 
             return p;

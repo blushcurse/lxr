@@ -89,12 +89,23 @@ namespace Bloxstrap.LXR.Customization
         {
             var builtIns = new (string Name, string Key, string[] Files)[]
             {
-                ("LXR Glass", "LxrGlass", AllSlots),
-                ("LXR Red", "LxrRed", AllSlots),
-                ("LXR Mono", "LxrMono", AllSlots),
                 ("Classic 2006", "From2006", ArrowSlots),
                 ("Classic 2013", "From2013", ArrowSlots),
             };
+
+            // LXRStrap's own cursor packs were removed; clear their leftovers so only Roblox's cursors remain
+            foreach (string old in new[] { "LXR Glass", "LXR Red", "LXR Mono" })
+            {
+                string oldFolder = Path.Combine(Library, old);
+
+                if (!File.Exists(Path.Combine(oldFolder, ".builtin")))
+                    continue;
+
+                if (AppliedPackName == old)
+                    RestoreOriginals();
+
+                Directory.Delete(oldFolder, true);
+            }
 
             foreach (var (name, era, files) in builtIns)
             {
@@ -114,28 +125,6 @@ namespace Bloxstrap.LXR.Customization
 
                 File.WriteAllText(Path.Combine(folder, ".builtin"), "");
             }
-        }
-
-        /// <summary>Saves generated PNGs as a user cursor pack in the library (replacing a generated pack of the same name).</summary>
-        public static CursorPack SaveGenerated(string name, Dictionary<string, byte[]> files)
-        {
-            foreach (char bad in Path.GetInvalidFileNameChars())
-                name = name.Replace(bad, '_');
-
-            string folder = Path.Combine(Library, name);
-
-            if (File.Exists(Path.Combine(folder, ".builtin")))
-                throw new InvalidOperationException("That name belongs to a built-in pack.");
-
-            if (Directory.Exists(folder))
-                Directory.Delete(folder, true);
-
-            Directory.CreateDirectory(folder);
-
-            foreach (var (file, data) in files)
-                File.WriteAllBytes(Path.Combine(folder, file), data);
-
-            return GetPacks().First(x => x.Name == name);
         }
 
         public static List<CursorPack> GetPacks()

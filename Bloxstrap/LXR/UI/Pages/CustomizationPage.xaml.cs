@@ -58,7 +58,6 @@ namespace Bloxstrap.LXR.UI.Pages
                 LoadPacks();
                 BuildGraphics();
                 LoadAssets();
-                GenSize_Changed(this, new RoutedEventArgs());
             };
         }
 
@@ -151,55 +150,6 @@ namespace Bloxstrap.LXR.UI.Pages
             catch
             {
                 return null;
-            }
-        }
-
-        private void GenSize_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
-        {
-            if (GenSizeText is null)
-                return;
-
-            int percent = (int)GenSize.Value;
-            GenSizeText.Text = $"{percent}%  ·  {CursorGenerator.CanvasFor(percent)} px";
-
-            bool friendly = GenGameBar.IsChecked == true;
-            int lockSize = CursorGenerator.ShiftLockCanvasFor(percent, friendly);
-
-            GenGameBarNote.Text = friendly
-                ? $"Shift-lock image is {lockSize} px. Xbox Game Bar draws a cursor shifted by half its image size, so in recordings it sits about {lockSize / 2} px off. In the game it stays exactly centred."
-                : $"Normal shift-lock image is {lockSize} px, so Xbox Game Bar recordings show it about {lockSize / 2} px off. Tick this to shrink that.";
-        }
-
-        private void GenSize_Changed(object sender, RoutedEventArgs e) =>
-            GenSize_ValueChanged(sender, new RoutedPropertyChangedEventArgs<double>(GenSize.Value, GenSize.Value));
-
-        private void GenCreate_Click(object sender, RoutedEventArgs e)
-        {
-            CursorLook look = GenDark.IsChecked == true ? CursorLook.Dark
-                : GenRed.IsChecked == true ? CursorLook.Red
-                : GenAccent.IsChecked == true ? CursorLook.Accent
-                : CursorLook.Light;
-
-            int percent = (int)GenSize.Value;
-
-            Color accent = Colors.White;
-            if (TryFindResource("LxrAccentSolidBrush") is SolidColorBrush brush)
-                accent = brush.Color;
-
-            try
-            {
-                bool friendly = GenGameBar.IsChecked == true;
-                var files = CursorGenerator.Generate(look, percent, accent, friendly);
-                var pack = CursorService.SaveGenerated(CursorGenerator.PackName(look, percent, friendly), files);
-
-                _selectedPack = pack;
-                LoadPacks();
-                ImportMessages.Text = $"Created \"{pack.Name}\". Press Apply to use it; it takes effect the next time Roblox starts.";
-            }
-            catch (Exception ex)
-            {
-                App.Logger.WriteException("CustomizationPage::GenCreate", ex);
-                ImportMessages.Text = "Could not create the cursor: " + ex.Message;
             }
         }
 

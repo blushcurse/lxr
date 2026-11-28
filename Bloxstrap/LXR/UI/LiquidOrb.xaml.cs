@@ -5,7 +5,7 @@ using System.Windows.Media.Animation;
 namespace Bloxstrap.LXR.UI
 {
     /// <summary>
-    /// The LXRStrap mark: a black-and-white liquid glass orb with a slow drip. It animates only while it is visible
+    /// The LXRStrap mark: a white liquid bar crossing a red one (an X) with a slow drip and a sweeping shine. It animates only while it is visible
     /// and its window is active, and not at all when animations are set to "Off", so it costs nothing in the background.
     /// </summary>
     public partial class LiquidOrb : UserControl

@@ -28,6 +28,8 @@ namespace Bloxstrap.LXR.UI
 
                 if (Motion.PageTransitions)
                     Motion.OpenWindow(this);
+
+                _ = CheckForLxrUpdateAsync();
             };
 
             // The indicator only changes when something is actually written; nothing polls.
@@ -70,6 +72,22 @@ namespace Bloxstrap.LXR.UI
         }
 
         // the glass highlight glides to the selected item instead of jumping
+        // asks Yes/No when a newer LXRStrap exists on the project's releases; Yes replaces this copy and restarts
+        private async Task CheckForLxrUpdateAsync()
+        {
+            try
+            {
+                var release = await SelfUpdater.FindNewerAsync();
+
+                if (release is not null && await SelfUpdater.AskAndUpdateAsync(release))
+                    App.Terminate();
+            }
+            catch (Exception ex)
+            {
+                App.Logger.WriteException("MainWindow::CheckForLxrUpdate", ex);
+            }
+        }
+
         private void MoveIndicator(RadioButton target, bool animate)
         {
             if (!target.IsLoaded || target.ActualWidth <= 0)

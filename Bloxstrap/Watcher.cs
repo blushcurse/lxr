@@ -68,7 +68,16 @@ namespace Bloxstrap
                     RichPresence = new(ActivityWatcher);
             }
 
-            _notifyIcon = new(this);
+            try
+            {
+                _notifyIcon = new(this);
+            }
+            catch (Exception ex)
+            {
+                // the popup and Discord presence keep working even if the tray icon can't be created
+                App.Logger.WriteLine(LOG_IDENT, "Failed to create the tray icon");
+                App.Logger.WriteException(LOG_IDENT, ex);
+            }
         }
 
         public void KillRobloxProcess() => CloseProcess(_watcherData!.ProcessId, true);

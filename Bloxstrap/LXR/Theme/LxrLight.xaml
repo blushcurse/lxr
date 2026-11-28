@@ -62,6 +62,20 @@
         <GradientStop Color="#FF2F8CFF" Offset="1" />
     </LinearGradientBrush>
     <SolidColorBrush x:Key="LxrAccentSolidBrush" Color="#FF5B5BF0" />
+    <Color x:Key="LxrAccentColor">#FF5B5BF0</Color>
+    <RadialGradientBrush x:Key="LxrAccentGlowBrush">
+        <GradientStop Color="#555B5BF0" Offset="0" />
+        <GradientStop Color="#005B5BF0" Offset="1" />
+    </RadialGradientBrush>
+    <RadialGradientBrush x:Key="LxrAccentAuraBrush" Center="0.5,0.5" GradientOrigin="0.5,0.5" RadiusX="0.5" RadiusY="0.5">
+        <GradientStop Color="#3D5B5BF0" Offset="0" />
+        <GradientStop Color="#005B5BF0" Offset="1" />
+    </RadialGradientBrush>
+    <SolidColorBrush x:Key="LxrAccentFaintBrush" Color="#185B5BF0" />
+    <LinearGradientBrush x:Key="LxrAccentLineBrush" StartPoint="0,0" EndPoint="1,0">
+        <GradientStop Color="#FF5B5BF0" Offset="0" />
+        <GradientStop Color="#005B5BF0" Offset="1" />
+    </LinearGradientBrush>
     <SolidColorBrush x:Key="LxrAccentSoftBrush" Color="#245B5BF0" />
     <SolidColorBrush x:Key="LxrOnAccentBrush" Color="#FFFFFFFF" />
 
