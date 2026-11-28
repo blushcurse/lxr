@@ -39,7 +39,10 @@ namespace Bloxstrap.LXR.UI.Pages
             buttons.Children.Add(clear);
 
             var header = new StackPanel { Margin = new Thickness(0, 0, 0, 18) };
+            var rule = new System.Windows.Shapes.Rectangle();
+            rule.SetResourceReference(StyleProperty, "LxrAccentRule");
             header.Children.Add(title);
+            header.Children.Add(rule);
             header.Children.Add(sub);
             header.Children.Add(buttons);
 

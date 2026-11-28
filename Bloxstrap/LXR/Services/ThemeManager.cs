@@ -72,6 +72,7 @@ namespace Bloxstrap.LXR.Services
                 dict["LxrAccentSolidBrush"] = new SolidColorBrush(color);
                 dict["LxrAccentSoftBrush"] = new SolidColorBrush(Color.FromArgb(0x30, color.R, color.G, color.B));
                 dict["LxrAccentColor"] = color;
+                dict["LxrSpotColor"] = Color.FromArgb(0x3A, color.R, color.G, color.B);
                 dict["LxrAccentGlowBrush"] = RadialBrush(color, 0x55);
                 dict["LxrAccentAuraBrush"] = RadialBrush(color, 0x3D);
                 dict["LxrAccentFaintBrush"] = new SolidColorBrush(Color.FromArgb(0x18, color.R, color.G, color.B));

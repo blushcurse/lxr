@@ -9,7 +9,7 @@
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
 
-        <TextBlock Text="Customization" Style="{StaticResource LxrTitle}" FontSize="26" />
+        <StackPanel><TextBlock Text="Customization" Style="{StaticResource LxrTitle}" FontSize="26" /><Rectangle Style="{StaticResource LxrAccentRule}" /></StackPanel>
 
         <StackPanel Grid.Row="1" Orientation="Horizontal" Margin="0,16,0,18">
             <RadioButton x:Name="TabCursors" Content="Cursors" Style="{StaticResource LxrSegment}" GroupName="custab" IsChecked="True" Checked="Tab_Checked" />

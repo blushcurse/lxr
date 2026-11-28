@@ -26,7 +26,7 @@
                     BorderBrush="{DynamicResource LxrBorderBrush}" BorderThickness="1">
                 <Grid x:Name="DockHost">
                     <Border x:Name="DockIndicator" HorizontalAlignment="Left" Width="0" CornerRadius="21"
-                            Background="{DynamicResource LxrSurfaceHoverBrush}" BorderBrush="{DynamicResource LxrRimBrush}" BorderThickness="1">
+                            Background="{DynamicResource LxrSurfaceHoverBrush}" BorderBrush="{DynamicResource LxrAccentSolidBrush}" BorderThickness="1">
                         <Border.RenderTransform><TranslateTransform x:Name="DockShift" X="0" /></Border.RenderTransform>
                     </Border>
                     <StackPanel Orientation="Horizontal">

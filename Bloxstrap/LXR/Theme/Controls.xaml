@@ -20,6 +20,15 @@
         <Setter Property="FontWeight" Value="SemiBold" />
         <Setter Property="Foreground" Value="{DynamicResource LxrTextBrush}" />
     </Style>
+    <Style x:Key="LxrAccentRule" TargetType="Rectangle">
+        <Setter Property="Height" Value="3" />
+        <Setter Property="Width" Value="72" />
+        <Setter Property="RadiusX" Value="1.5" />
+        <Setter Property="RadiusY" Value="1.5" />
+        <Setter Property="HorizontalAlignment" Value="Left" />
+        <Setter Property="Margin" Value="0,8,0,0" />
+        <Setter Property="Fill" Value="{DynamicResource LxrAccentLineBrush}" />
+    </Style>
     <Style x:Key="LxrHeading" TargetType="TextBlock">
         <Setter Property="FontFamily" Value="{StaticResource LxrDisplayFont}" />
         <Setter Property="FontSize" Value="16" />
@@ -71,7 +80,7 @@
                                 </RadialGradientBrush>
                             </Border.Background>
                         </Border>
-                        <Border x:Name="Rim" CornerRadius="{StaticResource LxrRadiusLg}" BorderBrush="{DynamicResource LxrRimBrush}"
+                        <Border x:Name="Rim" CornerRadius="{StaticResource LxrRadiusLg}" BorderBrush="{DynamicResource LxrAccentSolidBrush}"
                                 BorderThickness="1" Opacity="0" IsHitTestVisible="False" />
                         <Border Height="1" VerticalAlignment="Top" Margin="18,1,18,0"
                                 Background="{DynamicResource LxrTopHighlightBrush}" IsHitTestVisible="False" />
@@ -146,7 +155,7 @@
                             </Border.Background>
                         </Border>
                         <Border x:Name="Rim" CornerRadius="{StaticResource LxrRadiusMd}"
-                                BorderBrush="{DynamicResource LxrRimBrush}" BorderThickness="1" Opacity="0" IsHitTestVisible="False" />
+                                BorderBrush="{DynamicResource LxrAccentSolidBrush}" BorderThickness="1" Opacity="0" IsHitTestVisible="False" />
                         <Border x:Name="Press" CornerRadius="{StaticResource LxrRadiusMd}"
                                 Background="{DynamicResource LxrPressOverlayBrush}" Opacity="0" IsHitTestVisible="False" />
                         <Border x:Name="Focus" CornerRadius="{StaticResource LxrRadiusMd}"
@@ -344,7 +353,7 @@
                             <Setter Property="Foreground" Value="{DynamicResource LxrTextBrush}" />
                         </Trigger>
                         <Trigger Property="IsChecked" Value="True">
-                            <Setter Property="Foreground" Value="{DynamicResource LxrTextBrush}" />
+                            <Setter Property="Foreground" Value="{DynamicResource LxrAccentSolidBrush}" />
                         </Trigger>
                     </ControlTemplate.Triggers>
                 </ControlTemplate>
@@ -711,9 +720,10 @@
                     <Grid x:Name="Root" Background="{TemplateBinding Background}">
                         <Grid IsHitTestVisible="False" ClipToBounds="True">
                             <Ellipse Width="520" Height="520" HorizontalAlignment="Left" VerticalAlignment="Top"
-                                     Margin="-180,-200,0,0" Fill="{DynamicResource LxrGlowABrush}" />
+                                     Margin="-180,-200,0,0" Fill="{DynamicResource LxrAccentAuraBrush}" />
                             <Ellipse Width="460" Height="460" HorizontalAlignment="Right" VerticalAlignment="Bottom"
-                                     Margin="0,0,-160,-190" Fill="{DynamicResource LxrGlowBBrush}" />
+                                     Margin="0,0,-160,-190" Fill="{DynamicResource LxrAccentAuraBrush}" />
+                            <Rectangle Height="2" VerticalAlignment="Top" Fill="{DynamicResource LxrAccentLineBrush}" Opacity="0.9" />
                         </Grid>
                         <Grid>
                             <Grid.RowDefinitions>
@@ -809,7 +819,7 @@
                                 </RadialGradientBrush>
                             </Border.Background>
                         </Border>
-                        <Border x:Name="Rim" CornerRadius="{StaticResource LxrRadiusLg}" BorderBrush="{DynamicResource LxrRimBrush}"
+                        <Border x:Name="Rim" CornerRadius="{StaticResource LxrRadiusLg}" BorderBrush="{DynamicResource LxrAccentSolidBrush}"
                                 BorderThickness="1" Opacity="0" IsHitTestVisible="False" />
                         <Border Height="1" VerticalAlignment="Top" Margin="18,1,18,0" Background="{DynamicResource LxrTopHighlightBrush}" IsHitTestVisible="False" />
                         <Border x:Name="Focus" CornerRadius="{StaticResource LxrRadiusLg}" BorderBrush="{DynamicResource LxrAccentSolidBrush}"

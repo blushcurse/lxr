@@ -45,7 +45,12 @@ namespace Bloxstrap.LXR.UI.Pages
 
             Grid.SetRow(tabs, 1);
             Grid.SetRow(_host, 2);
-            root.Children.Add(title);
+            var rule = new System.Windows.Shapes.Rectangle();
+            rule.SetResourceReference(StyleProperty, "LxrAccentRule");
+            var titleBox = new StackPanel();
+            titleBox.Children.Add(title);
+            titleBox.Children.Add(rule);
+            root.Children.Add(titleBox);
             root.Children.Add(tabs);
             root.Children.Add(_host);
 

@@ -2,32 +2,93 @@
                  xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                  xmlns:local="clr-namespace:Bloxstrap.LXR.UI"
-                 Title="LXRStrap" Width="440" Height="460" ResizeMode="NoResize"
+                 Title="LXRStrap" Width="460" Height="600" ResizeMode="NoResize"
                  Closing="Window_Closing">
-    <Grid Margin="40,4,40,28">
+    <local:LxrWindow.Resources>
+        <Storyboard x:Key="Ambient">
+            <!-- searching spinner (only visible when the work has no measurable progress) -->
+            <DoubleAnimation Storyboard.TargetName="SpinnerRotate" Storyboard.TargetProperty="Angle" From="0" To="360" Duration="0:0:1.5" RepeatBehavior="Forever" />
+            <!-- orbiting lights -->
+            <DoubleAnimation Storyboard.TargetName="OrbitA" Storyboard.TargetProperty="Angle" From="0" To="360" Duration="0:0:7" RepeatBehavior="Forever" />
+            <DoubleAnimation Storyboard.TargetName="OrbitB" Storyboard.TargetProperty="Angle" From="360" To="0" Duration="0:0:13" RepeatBehavior="Forever" />
+            <!-- the tick ring slowly turns -->
+            <DoubleAnimation Storyboard.TargetName="TickRotate" Storyboard.TargetProperty="Angle" From="0" To="360" Duration="0:0:60" RepeatBehavior="Forever" />
+            <!-- the aura breathes -->
+            <DoubleAnimation Storyboard.TargetName="Aura" Storyboard.TargetProperty="Opacity" From="0.5" To="1" Duration="0:0:2.4" AutoReverse="True" RepeatBehavior="Forever">
+                <DoubleAnimation.EasingFunction><SineEase EasingMode="EaseInOut" /></DoubleAnimation.EasingFunction>
+            </DoubleAnimation>
+            <DoubleAnimation Storyboard.TargetName="AuraScale" Storyboard.TargetProperty="ScaleX" From="0.9" To="1.1" Duration="0:0:2.4" AutoReverse="True" RepeatBehavior="Forever" />
+            <DoubleAnimation Storyboard.TargetName="AuraScale" Storyboard.TargetProperty="ScaleY" From="0.9" To="1.1" Duration="0:0:2.4" AutoReverse="True" RepeatBehavior="Forever" />
+        </Storyboard>
+    </local:LxrWindow.Resources>
+
+    <Grid Margin="30,0,30,26">
         <Grid.RowDefinitions>
             <RowDefinition Height="*" />
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
 
-        <local:LiquidOrb Width="150" Height="188" HorizontalAlignment="Center" VerticalAlignment="Center" />
+        <Viewbox Stretch="Uniform" MaxWidth="400">
+            <Grid Width="320" Height="320">
+                <!-- accent aura -->
+                <Ellipse x:Name="Aura" Width="320" Height="320" Fill="{DynamicResource LxrAccentAuraBrush}" Opacity="0.7" RenderTransformOrigin="0.5,0.5">
+                    <Ellipse.RenderTransform><ScaleTransform x:Name="AuraScale" /></Ellipse.RenderTransform>
+                </Ellipse>
 
-        <StackPanel Grid.Row="1" Margin="0,6,0,0">
-            <TextBlock Text="LXRStrap" Style="{StaticResource LxrTitle}" FontSize="22" HorizontalAlignment="Center" />
-            <TextBlock Text="{Binding Message}" Style="{StaticResource LxrDim}" FontSize="13" Margin="0,8,0,0"
-                       HorizontalAlignment="Center" TextAlignment="Center" TextTrimming="CharacterEllipsis" MaxWidth="360" />
-            <Grid Margin="0,20,0,0">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*" />
-                    <ColumnDefinition Width="Auto" />
-                </Grid.ColumnDefinitions>
-                <ProgressBar IsIndeterminate="{Binding Indeterminate}" Maximum="{Binding Maximum}" Value="{Binding Value}" VerticalAlignment="Center" />
-                <TextBlock Grid.Column="1" Text="{Binding PercentText}" Style="{StaticResource LxrFaint}" Margin="14,0,0,0" MinWidth="34" TextAlignment="Right" />
+                <!-- tick ring -->
+                <Ellipse Width="300" Height="300" StrokeThickness="6" StrokeDashArray="0.2 1.9" Stroke="{DynamicResource LxrBorderBrush}" RenderTransformOrigin="0.5,0.5">
+                    <Ellipse.RenderTransform><RotateTransform x:Name="TickRotate" /></Ellipse.RenderTransform>
+                </Ellipse>
+
+                <!-- progress track -->
+                <Ellipse Width="262" Height="262" StrokeThickness="5" Stroke="{DynamicResource LxrBorderSoftBrush}" />
+
+                <!-- progress arc and the searching spinner share the same radius (131) -->
+                <Canvas Width="320" Height="320">
+                    <Path x:Name="ProgressArc" StrokeThickness="6" StrokeStartLineCap="Round" StrokeEndLineCap="Round"
+                          Stroke="{DynamicResource LxrAccentBrush}" Visibility="Collapsed" />
+                    <Path x:Name="Spinner" StrokeThickness="6" StrokeStartLineCap="Round" StrokeEndLineCap="Round"
+                          Stroke="{DynamicResource LxrAccentBrush}"
+                          Canvas.Left="0" Canvas.Top="0" Width="320" Height="320">
+                        <Path.Data>
+                            <PathGeometry>
+                                <PathFigure StartPoint="160,29">
+                                    <ArcSegment Point="291,160" Size="131,131" SweepDirection="Clockwise" />
+                                </PathFigure>
+                            </PathGeometry>
+                        </Path.Data>
+                        <Path.RenderTransform><RotateTransform x:Name="SpinnerRotate" CenterX="160" CenterY="160" /></Path.RenderTransform>
+                    </Path>
+                </Canvas>
+
+                <!-- orbiting lights -->
+                <Canvas Width="320" Height="320">
+                    <Canvas.RenderTransform><RotateTransform x:Name="OrbitA" CenterX="160" CenterY="160" /></Canvas.RenderTransform>
+                    <Ellipse Canvas.Left="153" Canvas.Top="2" Width="14" Height="14" Fill="{DynamicResource LxrAccentSolidBrush}" Opacity="0.95" />
+                    <Ellipse Canvas.Left="157" Canvas.Top="302" Width="6" Height="6" Fill="{DynamicResource LxrTextBrush}" Opacity="0.7" />
+                </Canvas>
+                <Canvas Width="320" Height="320">
+                    <Canvas.RenderTransform><RotateTransform x:Name="OrbitB" CenterX="160" CenterY="160" /></Canvas.RenderTransform>
+                    <Ellipse Canvas.Left="300" Canvas.Top="156" Width="8" Height="8" Fill="{DynamicResource LxrAccentSolidBrush}" Opacity="0.6" />
+                    <Ellipse Canvas.Left="14" Canvas.Top="158" Width="5" Height="5" Fill="{DynamicResource LxrTextBrush}" Opacity="0.5" />
+                </Canvas>
+
+                <!-- the mark: a dim ghost, and a bright copy that fills from the bottom as progress grows -->
+                <local:LiquidOrb x:Name="GhostOrb" Width="150" Height="188" Animated="False" ShowDrip="False" Opacity="0.16" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                <local:LiquidOrb x:Name="FillOrb" Width="150" Height="188" HorizontalAlignment="Center" VerticalAlignment="Center" />
             </Grid>
+        </Viewbox>
+
+        <StackPanel Grid.Row="1" Margin="0,4,0,0">
+            <TextBlock x:Name="PercentLabel" Text="{Binding PercentText}" Style="{StaticResource LxrTitle}" FontSize="38" HorizontalAlignment="Center" MinHeight="48" />
+            <Rectangle Height="2" Width="120" Margin="0,2,0,12" Fill="{DynamicResource LxrAccentLineBrush}" HorizontalAlignment="Center" />
+            <TextBlock Text="{Binding Message}" Style="{StaticResource LxrBody}" FontSize="14" HorizontalAlignment="Center" TextAlignment="Center"
+                       TextTrimming="CharacterEllipsis" MaxWidth="380" />
+            <TextBlock Text="LXRStrap" Style="{StaticResource LxrFaint}" FontSize="11" Margin="0,8,0,0" HorizontalAlignment="Center" />
         </StackPanel>
 
-        <Button x:Name="CancelButton" Grid.Row="2" Content="Cancel" HorizontalAlignment="Center" Margin="0,18,0,0"
+        <Button x:Name="CancelButton" Grid.Row="2" Content="Cancel" HorizontalAlignment="Center" Margin="0,16,0,0"
                 Visibility="{Binding CancelVisibility}" Click="CancelButton_Click" />
     </Grid>
 </local:LxrWindow>

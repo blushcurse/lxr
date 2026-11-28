@@ -45,7 +45,7 @@
                 <RowDefinition Height="*" />
             </Grid.RowDefinitions>
 
-            <TextBlock Text="FastFlags" Style="{StaticResource LxrTitle}" FontSize="26" />
+            <StackPanel><TextBlock Text="FastFlags" Style="{StaticResource LxrTitle}" FontSize="26" /><Rectangle Style="{StaticResource LxrAccentRule}" /></StackPanel>
 
             <Border x:Name="OffBanner" Grid.Row="1" Style="{StaticResource LxrChip}" Margin="0,10,0,0" HorizontalAlignment="Left"
                     Background="{DynamicResource LxrWarnSoftBrush}" Visibility="Collapsed">

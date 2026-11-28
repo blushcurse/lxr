@@ -16,7 +16,10 @@
 
             <!-- hero -->
             <ContentControl Style="{StaticResource LxrCard}" Grid.RowSpan="2">
-                <Grid Margin="36,32">
+                <Grid>
+                    <Ellipse Width="460" Height="460" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,40,0,0"
+                             Fill="{DynamicResource LxrAccentAuraBrush}" IsHitTestVisible="False" />
+                    <Grid Margin="36,32">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto" />
                         <RowDefinition Height="*" />
@@ -26,6 +29,7 @@
                     <StackPanel>
                         <TextBlock x:Name="SubText" Style="{StaticResource LxrFaint}" />
                         <TextBlock Text="Ready when you are" Style="{StaticResource LxrTitle}" FontSize="34" Margin="0,6,0,0" />
+                        <Rectangle Style="{StaticResource LxrAccentRule}" Width="96" Height="4" Margin="0,12,0,0" />
                     </StackPanel>
 
                     <ui:LiquidOrb Grid.Row="1" Width="190" Height="238" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,18" />
@@ -41,6 +45,7 @@
                         <Button Content="Play" Style="{StaticResource LxrHeroButton}" Click="Play_Click" HorizontalAlignment="Stretch" Margin="0,18,0,0" />
                         <Button Content="Open Roblox Studio" Margin="0,10,0,0" HorizontalAlignment="Center" Style="{StaticResource LxrGhostButton}" Click="Studio_Click" />
                     </StackPanel>
+                    </Grid>
                 </Grid>
             </ContentControl>
 
@@ -54,7 +59,9 @@
                 <Button Style="{StaticResource LxrCardButton}" Margin="0,0,0,12" Click="Tile_Click" Tag="flags">
                     <Grid>
                         <Grid.ColumnDefinitions><ColumnDefinition Width="Auto" /><ColumnDefinition Width="*" /></Grid.ColumnDefinitions>
-                        <TextBlock Text="&#xE7C1;" Style="{StaticResource LxrIcon}" FontSize="22" Foreground="{DynamicResource LxrAccentSolidBrush}" VerticalAlignment="Top" Margin="0,2,16,0" />
+                        <Border Width="44" Height="44" CornerRadius="14" Background="{DynamicResource LxrAccentSoftBrush}" VerticalAlignment="Top" Margin="0,0,16,0">
+                            <TextBlock Text="&#xE7C1;" Style="{StaticResource LxrIcon}" FontSize="20" Foreground="{DynamicResource LxrAccentSolidBrush}" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                        </Border>
                         <StackPanel Grid.Column="1">
                             <TextBlock Text="FastFlags" Style="{StaticResource LxrHeading}" />
                             <TextBlock x:Name="FlagsTileText" Style="{StaticResource LxrDim}" Margin="0,4,0,0" TextWrapping="Wrap" />
@@ -65,7 +72,9 @@
                 <Button Style="{StaticResource LxrCardButton}" Margin="0,0,0,12" Click="Tile_Click" Tag="customization">
                     <Grid>
                         <Grid.ColumnDefinitions><ColumnDefinition Width="Auto" /><ColumnDefinition Width="*" /></Grid.ColumnDefinitions>
-                        <TextBlock Text="&#xE790;" Style="{StaticResource LxrIcon}" FontSize="22" Foreground="{DynamicResource LxrAccentSolidBrush}" VerticalAlignment="Top" Margin="0,2,16,0" />
+                        <Border Width="44" Height="44" CornerRadius="14" Background="{DynamicResource LxrAccentSoftBrush}" VerticalAlignment="Top" Margin="0,0,16,0">
+                            <TextBlock Text="&#xE790;" Style="{StaticResource LxrIcon}" FontSize="20" Foreground="{DynamicResource LxrAccentSolidBrush}" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                        </Border>
                         <StackPanel Grid.Column="1">
                             <TextBlock Text="Customize" Style="{StaticResource LxrHeading}" />
                             <TextBlock x:Name="CustomTileText" Style="{StaticResource LxrDim}" Margin="0,4,0,0" TextWrapping="Wrap" />
@@ -76,7 +85,9 @@
                 <Button Style="{StaticResource LxrCardButton}" Margin="0,0,0,12" Click="Tile_Click" Tag="updates">
                     <Grid>
                         <Grid.ColumnDefinitions><ColumnDefinition Width="Auto" /><ColumnDefinition Width="*" /></Grid.ColumnDefinitions>
-                        <TextBlock Text="&#xE895;" Style="{StaticResource LxrIcon}" FontSize="22" Foreground="{DynamicResource LxrAccentSolidBrush}" VerticalAlignment="Top" Margin="0,2,16,0" />
+                        <Border Width="44" Height="44" CornerRadius="14" Background="{DynamicResource LxrAccentSoftBrush}" VerticalAlignment="Top" Margin="0,0,16,0">
+                            <TextBlock Text="&#xE895;" Style="{StaticResource LxrIcon}" FontSize="20" Foreground="{DynamicResource LxrAccentSolidBrush}" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                        </Border>
                         <StackPanel Grid.Column="1">
                             <TextBlock Text="Roblox updates" Style="{StaticResource LxrHeading}" />
                             <TextBlock x:Name="UpdatesTileText" Style="{StaticResource LxrDim}" Margin="0,4,0,0" TextWrapping="Wrap" />
@@ -87,7 +98,9 @@
                 <Button Style="{StaticResource LxrCardButton}" Click="Tile_Click" Tag="settings">
                     <Grid>
                         <Grid.ColumnDefinitions><ColumnDefinition Width="Auto" /><ColumnDefinition Width="*" /></Grid.ColumnDefinitions>
-                        <TextBlock Text="&#xE713;" Style="{StaticResource LxrIcon}" FontSize="22" Foreground="{DynamicResource LxrAccentSolidBrush}" VerticalAlignment="Top" Margin="0,2,16,0" />
+                        <Border Width="44" Height="44" CornerRadius="14" Background="{DynamicResource LxrAccentSoftBrush}" VerticalAlignment="Top" Margin="0,0,16,0">
+                            <TextBlock Text="&#xE713;" Style="{StaticResource LxrIcon}" FontSize="20" Foreground="{DynamicResource LxrAccentSolidBrush}" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                        </Border>
                         <StackPanel Grid.Column="1">
                             <TextBlock Text="Settings" Style="{StaticResource LxrHeading}" />
                             <TextBlock Text="Theme, accent, performance and privacy." Style="{StaticResource LxrDim}" Margin="0,4,0,0" TextWrapping="Wrap" />
