@@ -9,6 +9,7 @@ LXRStrap is a modified version of [Bloxstrap](https://github.com/bloxstraplabs/b
 - **Home**: launch Roblox or Studio, see what's active.
 - **FastFlags**: searchable explorer with categories, a detail panel per flag (current/default value, effect, performance and visual notes, compatibility, how sure we are), toggles, reset, restore defaults, custom flags clearly marked unverified. See [docs/FASTFLAGS.md](docs/FASTFLAGS.md).
 - **Customization**: cursor manager (drag and drop PNG/CUR/ICO/folder/ZIP, validation, preview, apply, backup and restore), graphics options built only from allowlisted flags, mod packs, a few classic presets and a custom font.
+- **Updates**: LXRStrap checks its GitHub releases when you open it and asks Yes/No before replacing itself. Roblox updates ask Yes/No too.
 - **Settings**: General, Appearance, Performance, Privacy, Updates, Advanced. Everything autosaves (debounced, atomic writes). There are no Save buttons.
 - **About**: version, diagnostics, credits and licence.
 

@@ -55,3 +55,12 @@ Roblox protocol handlers (`roblox://`) are registered by whichever launcher inst
 - **Game Bar friendly shift-lock** (Customize > Cursors). Xbox Game Bar draws the cursor image shifted by half its size. A single image cannot be right for both Roblox (centre of the image) and Game Bar (corner of the image), so this option crops the shift-lock image as tight as possible to shrink the recording offset. It does not remove it. The page shows the expected offset in pixels.
 - **Server location popup** now has a fallback trigger (20 s after the join started if the "joined" line never appears), an always-on-top window, and a **Test now** button in Settings that reads your newest Roblox log and shows the result.
 - **New icon.** Black glass squircle with a white liquid bar crossing a red one (an X) and a drip.
+
+## Stage 8
+
+- **Removed** the modern cursor maker, the Game Bar option and LXRStrap's own cursor packs. Cursors are back to Roblox's own (Classic 2006 and 2013) plus importing your own files. The shift-lock image still goes in the correct `textures` folder.
+- **Tray icon and server location popup rebuilt.** The tray is now a plain Windows menu with no WPF windows, so it can't fail because of a theme or resource. The popup shows as soon as you join (with a 10 second fallback if Roblox's log line differs). Left-click the tray icon to see the server location again. Settings > Privacy > Test now checks your latest Roblox log.
+- **New brand image everywhere.** The animated mark inside the app is now the X (white liquid bar crossing a red one) with a sweeping shine and a drip, including Home, the loading screen, the installer and About. The old Classic alternative icon was replaced with a light version.
+- **Loading screen redone.** A progress ring that glides to the real value, a mark that fills with liquid as progress grows, orbiting lights, and a spinning arc when there is nothing measurable. It stops animating when animations are Off.
+- **Updates ask first.** Opening LXRStrap checks the project's GitHub releases and asks Yes/No before replacing itself. Roblox updates ask Yes/No as well (Settings > Updates to turn either off). Every push to `main` builds a release (`v1.0.<run number>`) through `.github/workflows/release.yml`.
+- **Stronger accent.** Accent aura in the window background, a hairline across the top, accent outline on hovered cards, accent-tinted spotlight, accent icon chips on Home, and an accent underline on page titles.
